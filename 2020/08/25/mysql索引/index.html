@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>mysql索引 | Hexo</title>
+  <meta name="description" content="mysql索引准备 数据库与表  12345678910111213CREATE DATABASE demo;CREATE TABLE &#96;t_test&#96; (  &#96;id&#96; int(10) unsigned NOT NULL AUTO_INCREMENT,  &#96;x&#96; varchar(50) DEFAULT NULL,  &#96;a&#96; varchar(50) DEFAULT NULL,  &#96;b&#96; tinyin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql索引">
+<meta property="og:url" content="http://www.zhangfuguan.top/2020/08/25/mysql%E7%B4%A2%E5%BC%95/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="mysql索引准备 数据库与表  12345678910111213CREATE DATABASE demo;CREATE TABLE &#96;t_test&#96; (  &#96;id&#96; int(10) unsigned NOT NULL AUTO_INCREMENT,  &#96;x&#96; varchar(50) DEFAULT NULL,  &#96;a&#96; varchar(50) DEFAULT NULL,  &#96;b&#96; tinyin">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-24T16:54:11.000Z">
+<meta property="article:modified_time" content="2021-04-04T13:17:14.787Z">
+<meta property="article:author" content="乐柠">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="索引">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://www.zhangfuguan.top/2020/08/25/mysql%E7%B4%A2%E5%BC%95/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/touxiang.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">张副官</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Developer &amp; Player</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/channel/" rel="tag">channel</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag">容器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="tag">数据库， 高可用</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F/" rel="tag">系统</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag">索引</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">虚拟化技术</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="/tags/channel/" style="font-size: 13.5px;">channel</a> <a href="/tags/go/" style="font-size: 14px;">go</a> <a href="/tags/golang/" style="font-size: 13px;">golang</a> <a href="/tags/mysql/" style="font-size: 13px;">mysql</a> <a href="/tags/redis/" style="font-size: 13px;">redis</a> <a href="/tags/%E5%AE%B9%E5%99%A8/" style="font-size: 13px;">容器</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 13px;">并发</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 13px;">数据库</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" style="font-size: 13px;">数据库， 高可用</a> <a href="/tags/%E7%B3%BB%E7%BB%9F/" style="font-size: 13px;">系统</a> <a href="/tags/%E7%B4%A2%E5%BC%95/" style="font-size: 13px;">索引</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 13px;">虚拟化技术</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" class="title">利用pprof排查内存泄漏</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-14T14:54:21.000Z" itemprop="datePublished">2020-11-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/15/go%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F/" class="title">go并发控制方式</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-14T16:25:17.000Z" itemprop="datePublished">2020-10-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="title">redis基本数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-12T17:08:35.000Z" itemprop="datePublished">2020-10-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" class="title">mysql索引</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-24T16:54:11.000Z" itemprop="datePublished">2020-08-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="title">go内存管理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-15T16:29:58.000Z" itemprop="datePublished">2020-08-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-mysql索引" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      mysql索引
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" class="article-date">
+	  <time datetime="2020-08-24T16:54:11.000Z" itemprop="datePublished">2020-08-25</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/mysql/" rel="tag">mysql</a>, <a class="article-tag-link-link" href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag">索引</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="mysql索引"><a href="#mysql索引" class="headerlink" title="mysql索引"></a>mysql索引</h3><h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><ul>
+<li>数据库与表</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t_test` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `x` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `a` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `b` tinyint(<span class="number">1</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `c` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `d` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `y` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  KEY `index_a_b_c_d` (`a`,`b`,`c`,`d`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8</span><br></pre></td></tr></table></figure>
+<h4 id="关于索引"><a href="#关于索引" class="headerlink" title="关于索引"></a>关于索引</h4><h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><p>可以把索引理解为一本书的目录，可以通过目录迅速找到自己想要的章节，本质上就是为了提高查询速度。</p>
+<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><p>通常使用explain来分析一条sql语句中索引使用情况。后期会有章节专门介绍explain命令的使用方法。</p>
+<ul>
+<li><p>用法：<code>EXPLAIN SQL</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t_users where id&#x3D;1890 \G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: t_users</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: const</span><br><span class="line">possible_keys: PRIMARY</span><br><span class="line">          key: PRIMARY</span><br><span class="line">      key_len: 8</span><br><span class="line">          ref: const</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="索引创建原则"><a href="#索引创建原则" class="headerlink" title="索引创建原则"></a>索引创建原则</h5><ul>
+<li>对于重复度比较高的字段不适合做索引，比如性别，充其量就是男，女，其他，做索引作用不大。</li>
+<li>创建合适的唯一索引</li>
+<li>遵循最左匹配原则</li>
+<li>对于经常用于排序（order by），分组（group by）的字段，我们可以建立索引</li>
+<li>索引所在的列不能参与计算，不然会失效</li>
+<li>尽量扩展索引，不要新增加索引。</li>
+</ul>
+<h4 id="普通索引（简单索引）"><a href="#普通索引（简单索引）" class="headerlink" title="普通索引（简单索引）"></a>普通索引（简单索引）</h4><p>最常见的索引之一，没有任何我约束。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX index_name <span class="keyword">ON</span> table_name(<span class="keyword">column</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">-- eg:</span></span><br><span class="line"><span class="keyword">CREATE</span> INDEX index_a <span class="keyword">ON</span> t_test(a);</span><br></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> explain select * from t_test <span class="built_in">where</span> a=<span class="string">&#x27;123&#x27;</span> \G;</span></span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: t_test</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ref</span><br><span class="line">possible_keys: index_a</span><br><span class="line">          key: index_a</span><br><span class="line">      key_len: 153</span><br><span class="line">          ref: const</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: NULL</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h4 id="联合索引（符合索引）"><a href="#联合索引（符合索引）" class="headerlink" title="联合索引（符合索引）"></a>联合索引（符合索引）</h4><p>将多个字段用于创建索引。联合索引最重要的就是最左原则，他决定索引是否生效。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE INDEX index_name ON table_name(column1,column2,column3...);</span><br></pre></td></tr></table></figure>
+<h5 id="索引最左原则"><a href="#索引最左原则" class="headerlink" title="索引最左原则"></a>索引最左原则</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX index_name <span class="keyword">ON</span> table_name(column1, column2);</span><br></pre></td></tr></table></figure>
+<p>比如表t_test拥有字段<code>x,a,b,c,d,y</code>, 现在将字段<code>a,b,c,d</code>创建为联合索引，实际上是建立了<code>a</code>，<code>a,b</code>，<code>a,b,c</code>，<code>a,b,c,d</code>四个索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX index_a_b_c_d <span class="keyword">ON</span> t_test(a,b,c,d);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>对于联合索引，mysql会依照创建索引时的字段顺序向右匹配，直到遇到范围查询（&gt;,&lt;,between,like）就停止匹配。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> t_test <span class="keyword">WHERE</span> a<span class="operator">=</span><span class="number">1</span> <span class="keyword">AND</span> b<span class="operator">=</span><span class="number">2</span> <span class="keyword">AND</span> c<span class="operator">&gt;</span><span class="number">3</span> <span class="keyword">AND</span> d<span class="operator">=</span><span class="number">6</span>;</span><br></pre></td></tr></table></figure>
+<p>此时<code>c</code> 无法使用索引。</p>
+</li>
+<li><p>对于查询中的<code>=</code>和<code>in</code>，只要<code>WHERE</code>里面对于索引字段的是<code>a</code>，<code>a,b</code>，<code>a,b,c</code>，<code>a,b,c,d</code>四种情况之一，那么字段条件后的字段顺序是不要求的， mysql会按照你创建索引字段顺序去比对。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> t_test <span class="keyword">WHERE</span> a<span class="operator">=</span><span class="number">1</span> <span class="keyword">AND</span> b<span class="operator">=</span><span class="number">2</span> <span class="keyword">AND</span> c<span class="operator">=</span><span class="number">3</span> <span class="keyword">AND</span> d<span class="operator">=</span><span class="number">6</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> t_test <span class="keyword">WHERE</span> c<span class="operator">=</span><span class="number">3</span> <span class="keyword">AND</span> d<span class="operator">=</span><span class="number">6</span> <span class="keyword">AND</span> a<span class="operator">=</span><span class="number">1</span> <span class="keyword">AND</span> b<span class="operator">=</span><span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h5 id="有几个疑问"><a href="#有几个疑问" class="headerlink" title="有几个疑问"></a>有几个疑问</h5><p>对于上面（a,b,c,d）组成的联合索引</p>
+<ul>
+<li><p>A：以下索引会生效吗？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a,b,c,d,x <span class="keyword">FROM</span> t_test <span class="keyword">WHERE</span> b<span class="operator">=</span><span class="number">1</span> <span class="keyword">AND</span> x<span class="operator">=</span><span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+<p>答案是不会生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; EXPLAIN SELECT a,b,c,d,x FROM t_test WHERE b&#x3D;1 \G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: t_test</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ALL</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: NULL</span><br><span class="line">      key_len: NULL</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using where</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>B：以下索引会生效吗？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT a,b,c,d FROM t_test WHERE b&#x3D;1 AND x&#x3D;5;</span><br></pre></td></tr></table></figure>
+<p>答案是会生效</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> EXPLAIN <span class="keyword">SELECT</span> a,b,c,d <span class="keyword">FROM</span> t_test <span class="keyword">WHERE</span> b<span class="operator">=</span><span class="number">1</span> \G;</span><br><span class="line"><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span> <span class="number">1.</span> <span class="type">row</span> <span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span></span><br><span class="line">           id: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: t_test</span><br><span class="line">   partitions: <span class="keyword">NULL</span></span><br><span class="line">         type: index</span><br><span class="line">possible_keys: <span class="keyword">NULL</span></span><br><span class="line">          key: index_a_b_c_d</span><br><span class="line">      key_len: <span class="number">313</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="keyword">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">1</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span>; <span class="keyword">Using</span> index</span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">1</span> warning (<span class="number">0.00</span> sec)</span><br><span class="line"> </span><br><span class="line">ERROR:</span><br><span class="line"><span class="keyword">No</span> query specified</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>B生效的原因在于查询条件中只有包含索引的字段，查询内容也全部在索引字段中，所以它只需要操作索引表即可。</p>
+<p>A不生效是因为除了操作索引表之外，还需要从数据表中拿到额外的字段数据。</p>
+</li>
+</ul>
+<h4 id="唯一索引"><a href="#唯一索引" class="headerlink" title="唯一索引"></a>唯一索引</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE UNIQUE INDEX index_name ON table_name(column);</span><br></pre></td></tr></table></figure>
+<h4 id="主键索引"><a href="#主键索引" class="headerlink" title="主键索引"></a>主键索引</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `table_name` (</span><br><span class="line">    `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT ,</span><br><span class="line">    `name` <span class="type">varchar</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> ,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h4 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> FULLTEXT INDEX index_name <span class="keyword">ON</span> table_name(<span class="keyword">column</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
+<li><p>使用索引的时候尽量不要使用like,  在语句<code>like value%</code>时索引会生效，但是<code>like %value%</code>不会生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t_test where a like &quot;a%&quot; \G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: t_test</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: range</span><br><span class="line">possible_keys: index_a_b_c_d</span><br><span class="line">          key: index_a_b_c_d</span><br><span class="line">      key_len: 153</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using index condition</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; explain select * from t_test where a like &quot;%a%&quot;\G;</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           id: 1</span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        table: t_test</span><br><span class="line">   partitions: NULL</span><br><span class="line">         type: ALL</span><br><span class="line">possible_keys: NULL</span><br><span class="line">          key: NULL</span><br><span class="line">      key_len: NULL</span><br><span class="line">          ref: NULL</span><br><span class="line">         rows: 1</span><br><span class="line">     filtered: 100.00</span><br><span class="line">        Extra: Using where</span><br><span class="line">1 row in set, 1 warning (0.00 sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在索引列运算会导致索引失效</p>
+</li>
+<li><p>如果where后面的条件字段数据类型与匹配值的类型不一致，可能会导致索引失效</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> explain <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test <span class="keyword">where</span> a<span class="operator">=</span>&quot;1&quot;\G;</span><br><span class="line"><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span> <span class="number">1.</span> <span class="type">row</span> <span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span></span><br><span class="line">           id: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: t_test</span><br><span class="line">   partitions: <span class="keyword">NULL</span></span><br><span class="line">         type: <span class="keyword">ref</span></span><br><span class="line">possible_keys: index_a_b_c_d</span><br><span class="line">          key: index_a_b_c_d</span><br><span class="line">      key_len: <span class="number">153</span></span><br><span class="line">          <span class="keyword">ref</span>: const</span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">1</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">NULL</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">1</span> warning (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> explain <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test <span class="keyword">where</span> a<span class="operator">=</span><span class="number">1</span> \G;</span><br><span class="line"><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span> <span class="number">1.</span> <span class="type">row</span> <span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span><span class="operator">*</span></span><br><span class="line">           id: <span class="number">1</span></span><br><span class="line">  select_type: SIMPLE</span><br><span class="line">        <span class="keyword">table</span>: t_test</span><br><span class="line">   partitions: <span class="keyword">NULL</span></span><br><span class="line">         type: <span class="keyword">ALL</span></span><br><span class="line">possible_keys: index_a_b_c_d</span><br><span class="line">          key: <span class="keyword">NULL</span></span><br><span class="line">      key_len: <span class="keyword">NULL</span></span><br><span class="line">          <span class="keyword">ref</span>: <span class="keyword">NULL</span></span><br><span class="line">         <span class="keyword">rows</span>: <span class="number">1</span></span><br><span class="line">     filtered: <span class="number">100.00</span></span><br><span class="line">        Extra: <span class="keyword">Using</span> <span class="keyword">where</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">3</span> warnings (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>索引所在列的值不能为null。只有该列包含null值，则该索引列会失效。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://www.zhangfuguan.top/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引" target="_blank" rel="external">http://www.zhangfuguan.top/2020/08/25/mysql%E7%B4%A2%E5%BC%95/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/touxiang.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">张副官</span><small class="ml-1x">Developer &amp; Player</small></a></h3>
+        <div>Just a man。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="redis基本数据结构"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="go内存管理"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '83a7110a010f5947dbb2',
+    clientSecret: 'fc73c0a5144fd5dbde4063fc6969a2f8c8e7b8c3',
+    repo: 'kavinbright.github.io',
+    owner: 'kavinbright',
+    admin: ['kavinbright'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>现代语言的内存管理模型 | Hexo</title>
+  <meta name="description" content="揭开现代语言内存管理的神秘面纱–译自：Deepu K Sasidharan，如果你对Deepu K Sasidharan的内容感兴趣可以在twitter上面关注他，随时获取最新动态。 Part1 什么是内存管理？其实内存管理就是控制和协调应用程序访问计算机内存的过程。这是一个严肃的话题，令人困惑，因为对于很多人而言它是一个黑盒子，让人捉摸不透。 What is it ?当我们的程序运行在目标计算机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="现代语言的内存管理模型">
+<meta property="og:url" content="http://www.zhangfuguan.top/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="揭开现代语言内存管理的神秘面纱–译自：Deepu K Sasidharan，如果你对Deepu K Sasidharan的内容感兴趣可以在twitter上面关注他，随时获取最新动态。 Part1 什么是内存管理？其实内存管理就是控制和协调应用程序访问计算机内存的过程。这是一个严肃的话题，令人困惑，因为对于很多人而言它是一个黑盒子，让人捉摸不透。 What is it ?当我们的程序运行在目标计算机">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgur.com/7KpvEn1.gif">
+<meta property="og:image" content="https://i.imgur.com/AZaR0LP.gif">
+<meta property="og:image" content="https://thepracticaldev.s3.amazonaws.com/i/cxs080wnnykflkmsfo9p.png">
+<meta property="article:published_time" content="2020-08-10T16:04:31.000Z">
+<meta property="article:modified_time" content="2021-04-04T13:17:14.798Z">
+<meta property="article:author" content="乐柠">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/7KpvEn1.gif">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://www.zhangfuguan.top/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/touxiang.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">张副官</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Developer &amp; Player</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/channel/" rel="tag">channel</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag">容器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="tag">数据库， 高可用</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F/" rel="tag">系统</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag">索引</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">虚拟化技术</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="/tags/channel/" style="font-size: 13.5px;">channel</a> <a href="/tags/go/" style="font-size: 14px;">go</a> <a href="/tags/golang/" style="font-size: 13px;">golang</a> <a href="/tags/mysql/" style="font-size: 13px;">mysql</a> <a href="/tags/redis/" style="font-size: 13px;">redis</a> <a href="/tags/%E5%AE%B9%E5%99%A8/" style="font-size: 13px;">容器</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 13px;">并发</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 13px;">数据库</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" style="font-size: 13px;">数据库， 高可用</a> <a href="/tags/%E7%B3%BB%E7%BB%9F/" style="font-size: 13px;">系统</a> <a href="/tags/%E7%B4%A2%E5%BC%95/" style="font-size: 13px;">索引</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 13px;">虚拟化技术</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" class="title">利用pprof排查内存泄漏</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-14T14:54:21.000Z" itemprop="datePublished">2020-11-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/15/go%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F/" class="title">go并发控制方式</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-14T16:25:17.000Z" itemprop="datePublished">2020-10-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="title">redis基本数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-12T17:08:35.000Z" itemprop="datePublished">2020-10-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" class="title">mysql索引</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-24T16:54:11.000Z" itemprop="datePublished">2020-08-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="title">go内存管理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-15T16:29:58.000Z" itemprop="datePublished">2020-08-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-现代语言的内存管理模型" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      现代语言的内存管理模型
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/" class="article-date">
+	  <time datetime="2020-08-10T16:04:31.000Z" itemprop="datePublished">2020-08-11</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/go/" rel="tag">go</a>, <a class="article-tag-link-link" href="/tags/%E7%B3%BB%E7%BB%9F/" rel="tag">系统</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="揭开现代语言内存管理的神秘面纱"><a href="#揭开现代语言内存管理的神秘面纱" class="headerlink" title="揭开现代语言内存管理的神秘面纱"></a>揭开现代语言内存管理的神秘面纱</h3><p>–译自：<a target="_blank" rel="noopener" href="https://deepu.tech/memory-management-in-programming/">Deepu K Sasidharan</a>，如果你对<a target="_blank" rel="noopener" href="https://www.deepu.tech/">Deepu K Sasidharan</a>的内容感兴趣可以在<a target="_blank" rel="noopener" href="https://twitter.com/deepu105">twitter</a>上面关注他，随时获取最新动态。</p>
+<h4 id="Part1-什么是内存管理？"><a href="#Part1-什么是内存管理？" class="headerlink" title="Part1 什么是内存管理？"></a>Part1 什么是内存管理？</h4><p>其实内存管理就是控制和协调应用程序访问计算机内存的过程。这是一个严肃的话题，令人困惑，因为对于很多人而言它是一个黑盒子，让人捉摸不透。</p>
+<h4 id="What-is-it"><a href="#What-is-it" class="headerlink" title="What is it ?"></a>What is it ?</h4><p>当我们的程序运行在目标计算机上面的时候，它会通过计算机的内存（RAM）完成以下操作：</p>
+<ul>
+<li>加载需要执行的代码的字节数据</li>
+<li>保存执行时会使用到的数据和结构</li>
+<li>加载代码执行时所需要的所有运行时系统（简而言之，指的是已编译好的程序在运行时所需要的支持系统）</li>
+</ul>
+<p>我们的程序除了使用内存空间保存代码的字节码之外，还会使用到内存中的堆（Heap）和栈（Stack）。</p>
+<h4 id="栈（Stack）"><a href="#栈（Stack）" class="headerlink" title="栈（Stack）"></a>栈（Stack）</h4><p>栈通常用于静态内存空间的申请，见名知意，它遵循先进后出的规则。</p>
+<ul>
+<li>由于栈FIFO的特性，存储和查找数据从栈顶开始，无需查找对比，所以速度非常快</li>
+<li>栈是一块连续的内存区域，其地址的增长方向是向下进行的，向内存地址减小的方向增长。保存在栈上面的数据是静态并且有限的（数据的大小在编译的时候已经确定）。</li>
+<li>与函数调用相关的数据将会以栈帧（<strong>stack frames</strong>）的形式保存，每个栈帧其实就是函数执行的环境，比如说函数每次申请一个新的变量，会将其push到栈的最顶层的块中，当函数退出的时候变量也随之销毁。</li>
+<li>对于那些支持多线程的应用，系统将会为每一个线程创建一个栈，数据为每个线程所独有。</li>
+<li>栈的内存管理简单明了，即由OS（系统）来完成。</li>
+<li>保存在栈中典型的数据包括局部变量，指针和函数块。</li>
+<li>相对于堆（Heap）而言，由于栈的大小收到限制，所以会有栈溢出的错误。</li>
+<li>对于绝大多数的语言来说报错在栈上面的数据会有大小的限制。</li>
+</ul>
+<p><img src="https://i.imgur.com/7KpvEn1.gif" alt="stack in JavaScript"></p>
+<p>JavaScript中使用的堆栈，对象存储在Heap中，并在需要时引用。</p>
+<h4 id="堆（Heap）"><a href="#堆（Heap）" class="headerlink" title="堆（Heap）"></a>堆（Heap）</h4><p>不同于栈，堆通常用于动态分配内存，在堆中程序需要使用指针来查找数据。</p>
+<ul>
+<li>在查找数据方面堆的效率比栈慢很多，但是可存储的数据量更大。</li>
+<li>可以将动态大小的数据存储在堆中。</li>
+<li>同一个应用（可以理解为进程）的不同线程可以共享堆中的数据。</li>
+<li>由于堆内存是动态的，是语言自己申请和回收，所以堆内存的管理相对棘手。</li>
+<li>通常堆中会保存全局变量，对象，映射等负载数据结构。</li>
+<li>当你使用的堆内存容量超过你申请的内存容量时会抛出内存溢出的错误（当然也会有其他因素导致，比如GC）。</li>
+<li>通常而言，对于堆内存所能保存的数据容量是没有限制的，当然，它会受限于你应用所能申请的最大内存容量。</li>
+</ul>
+<h4 id="Why-is-it-important"><a href="#Why-is-it-important" class="headerlink" title="Why is it important?"></a>Why is it important?</h4><p>不同于硬盘，内存的容量不可能是不受限制的扩张，如果一个应用持续申请内存而不回收，那么最终将会把内存消耗殆尽，进而使系统崩溃。因此程序不能随心所欲的占用内存，这就要求程序开发者能够解决这个问题，而目前大多数语言都提供了解决这个问题的方法和途径。我们讨论的内存管理大多数情况下指的是堆的内存管理。</p>
+<h4 id="管理内存的方法"><a href="#管理内存的方法" class="headerlink" title="管理内存的方法"></a>管理内存的方法</h4><p>语言不会默认帮你管理内存，需要你手动申请和释放对象所需要的内存。比如，C和C++，他们提供了 <code>malloc</code>, <code>realloc</code>, <code>calloc</code>方法来申请内存，提供<code>free</code>方法来释放内存空间。这些都可以帮助开发者有效的管理堆内存，并且使用指针也是有效管理堆内存的一种方法，因人而异。</p>
+<h4 id="垃圾回收（GC）"><a href="#垃圾回收（GC）" class="headerlink" title="垃圾回收（GC）"></a>垃圾回收（GC）</h4><p>通过释放未使用的内存分配来自动管理堆内存。GC普遍用于现代语言的内存管理当中。GC会间歇式运行，因此可能会导致较小的开销，称为暂停时间。目前<strong>JVM(Java/Scala/Groovy/Kotlin)</strong>, <strong>JavaScript</strong>, <strong>C#</strong>, <strong>Golang</strong>, <strong>OCaml</strong> 和 <strong>Ruby</strong> 这些语言也使用GC作为默认的内存管理方式。</p>
+<p><img src="https://i.imgur.com/AZaR0LP.gif" alt="Mark &amp; sweep GC"></p>
+<p>常见垃圾回收机制</p>
+<h5 id="标记清除"><a href="#标记清除" class="headerlink" title="标记清除"></a>标记清除</h5><p>也称之为 <strong>Tracing GC</strong> 。它是典型的两阶段算法，首先将被引用的对象标记为“存活”，然后将处于非“存活”状态的对象销毁。<strong>JVM</strong>, <strong>C#</strong>, <strong>Ruby</strong>, <strong>JavaScript</strong>, 和<strong>Golang</strong> 都是采用这种方法。与<strong>JVM</strong>不同的是，<strong>JavaScript</strong>的V8引擎则是采用引用计数和标记清除相结合的方法实现其内存管理。这种GC方式也可以作为外部的库应用到C和C++上面。</p>
+<h5 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h5><p>在这种方法中，每个对象在创建之初都会得到一个引用计数，当这个对象被引用时计数会加一，当删除该引用时会减一，当引用计数为0的时候，该对象就会被删除释放。引用计数并非一种非常理想的解决方法，因为它无法处理循环引用。</p>
+<h4 id="RAII（Resource-Acquisition-is-Initialization）"><a href="#RAII（Resource-Acquisition-is-Initialization）" class="headerlink" title="RAII（Resource Acquisition is Initialization）"></a>RAII（Resource Acquisition is Initialization）</h4><p>在这种内存管理中，对象的内存分配伴随着对象从创建到销毁的整个生命周期。RAII技术被认为是C++中内存管理的最佳方法，也被<strong>Ada</strong> 和<strong>Rust</strong>所采用。</p>
+<h4 id="自动引用计数"><a href="#自动引用计数" class="headerlink" title="自动引用计数"></a>自动引用计数</h4><p>它类似于引用计数，但是与引用计数间歇式运行不同，它是在程序编译的时候将保存和释放的指令插入到代码当中，并且当引用计数为0的时候自动清除释放，这个过程不会造成任何程序暂停。但是它也不能处理循环引用并且依赖于开发者使用特定的关键指令来处理。在<strong>Objective C</strong> &amp; <strong>Swift</strong>中采用这种方式。</p>
+<h4 id="Ownership"><a href="#Ownership" class="headerlink" title="Ownership"></a>Ownership</h4><p>它结合了RAII和所有权模型，任何值都必须具有一个变量作为其所有者（一次只有一个所有者），当所有者超出范围时，该值将被释放以释放内存，而不管它在栈或堆内存中。它与编译时有点类似，被应用于<strong>Rust</strong>语言中，我目前还没发现其他语言使用这种方式。</p>
+<p><img src="https://thepracticaldev.s3.amazonaws.com/i/cxs080wnnykflkmsfo9p.png" alt="Ownership in Rust"></p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://www.zhangfuguan.top/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/" title="现代语言的内存管理模型" target="_blank" rel="external">http://www.zhangfuguan.top/2020/08/11/%E7%8E%B0%E4%BB%A3%E8%AF%AD%E8%A8%80%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A8%A1%E5%9E%8B/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/touxiang.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">张副官</span><small class="ml-1x">Developer &amp; Player</small></a></h3>
+        <div>Just a man。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" title="go内存管理"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/07/15/%E9%97%AD%E5%8C%85/" title="闭包"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '83a7110a010f5947dbb2',
+    clientSecret: 'fc73c0a5144fd5dbde4063fc6969a2f8c8e7b8c3',
+    repo: 'kavinbright.github.io',
+    owner: 'kavinbright',
+    admin: ['kavinbright'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

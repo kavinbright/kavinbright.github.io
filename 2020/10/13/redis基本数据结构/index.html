@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>redis基本数据结构 | Hexo</title>
+  <meta name="description" content="redis面试系列：数据结构 本文参考了《redis设计与实现》第二版  1. 数据类型 常见数据类型 string 字符串(简单动态字符串[sds],int整数) list 列表(链表[linkedlist]，压缩表[ziplist]) hash 哈希（字典[hashtable]，压缩表[ziplist]） set 集合（字典[hashtable], 整数集合[intset]） zset 有序集">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis基本数据结构">
+<meta property="og:url" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="redis面试系列：数据结构 本文参考了《redis设计与实现》第二版  1. 数据类型 常见数据类型 string 字符串(简单动态字符串[sds],int整数) list 列表(链表[linkedlist]，压缩表[ziplist]) hash 哈希（字典[hashtable]，压缩表[ziplist]） set 集合（字典[hashtable], 整数集合[intset]） zset 有序集">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png">
+<meta property="article:published_time" content="2020-10-12T17:08:35.000Z">
+<meta property="article:modified_time" content="2021-04-04T13:17:14.787Z">
+<meta property="article:author" content="乐柠">
+<meta property="article:tag" content="redis">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/touxiang.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">张副官</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Developer &amp; Player</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Shanghai, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/channel/" rel="tag">channel</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag">容器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="tag">数据库， 高可用</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F/" rel="tag">系统</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag">索引</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="tag">虚拟化技术</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="/tags/channel/" style="font-size: 13.5px;">channel</a> <a href="/tags/go/" style="font-size: 14px;">go</a> <a href="/tags/golang/" style="font-size: 13px;">golang</a> <a href="/tags/mysql/" style="font-size: 13px;">mysql</a> <a href="/tags/redis/" style="font-size: 13px;">redis</a> <a href="/tags/%E5%AE%B9%E5%99%A8/" style="font-size: 13px;">容器</a> <a href="/tags/%E5%B9%B6%E5%8F%91/" style="font-size: 13px;">并发</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 13px;">数据库</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/" style="font-size: 13px;">数据库， 高可用</a> <a href="/tags/%E7%B3%BB%E7%BB%9F/" style="font-size: 13px;">系统</a> <a href="/tags/%E7%B4%A2%E5%BC%95/" style="font-size: 13px;">索引</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E6%8A%80%E6%9C%AF/" style="font-size: 13px;">虚拟化技术</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">十一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">十月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/06/">六月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" class="title">利用pprof排查内存泄漏</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-14T14:54:21.000Z" itemprop="datePublished">2020-11-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/15/go%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F/" class="title">go并发控制方式</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-14T16:25:17.000Z" itemprop="datePublished">2020-10-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="title">redis基本数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-10-12T17:08:35.000Z" itemprop="datePublished">2020-10-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" class="title">mysql索引</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-24T16:54:11.000Z" itemprop="datePublished">2020-08-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="title">go内存管理</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-15T16:29:58.000Z" itemprop="datePublished">2020-08-16</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-redis基本数据结构" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      redis基本数据结构
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="article-date">
+	  <time datetime="2020-10-12T17:08:35.000Z" itemprop="datePublished">2020-10-13</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/redis/" rel="tag">redis</a>, <a class="article-tag-link-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="redis面试系列：数据结构"><a href="#redis面试系列：数据结构" class="headerlink" title="redis面试系列：数据结构"></a>redis面试系列：数据结构</h3><blockquote>
+<p>本文参考了《redis设计与实现》第二版</p>
+</blockquote>
+<h4 id="1-数据类型"><a href="#1-数据类型" class="headerlink" title="1. 数据类型"></a>1. 数据类型</h4><ul>
+<li>常见数据类型<ul>
+<li>string 字符串(简单动态字符串[sds],int整数)</li>
+<li>list 列表(链表[linkedlist]，压缩表[ziplist])</li>
+<li>hash 哈希（字典[hashtable]，压缩表[ziplist]）</li>
+<li>set 集合（字典[hashtable], 整数集合[intset]）</li>
+<li>zset 有序集合（跳跃表[skiplist], 压缩表[ziplist]）</li>
+</ul>
+</li>
+<li>其他高级类型<ul>
+<li>bitmap</li>
+<li>HyperLogLog</li>
+<li>Pub/Sub</li>
+<li>Geo</li>
+<li>BloomFilter</li>
+</ul>
+</li>
+</ul>
+<p>此文主要分析常见数据结构的应用场景、实现原理。</p>
+<h4 id="2-简单动态字符串（SDS）"><a href="#2-简单动态字符串（SDS）" class="headerlink" title="2. 简单动态字符串（SDS）"></a>2. 简单动态字符串（SDS）</h4><p>&emsp;&emsp;redis是基于c语言实现的，但是redis的字符串却没有直接使用c语言的string类型，而是基于自己实现的简单字符串（simple dynamic string，简称sds）。sds的数据结构如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</span><br><span class="line">    <span class="keyword">int</span> len;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>每一个字符串对应底层的sds是由三部分组成，分别是空闲空间长度，字符串长度，保存字符串的字节数组</li>
+<li>free表示当前空闲的字节数，即空闲空间长度</li>
+<li>len是用来保存当前字符串使用的字节长度，通常用来表示字符串的长度</li>
+<li>redis的字符串在sds底层是通过字节数组的方式保存在buf当中</li>
+</ul>
+<p>为什么redis放着c语言现成的字符串类型不用，却自己去实现一套sds呢？从sds的数据结构可以看出它具备以下几个特点：<br> <img src="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png" alt="redis基本数据结构"></p>
+<p>（1）有效防止缓存区溢出</p>
+<ul>
+<li>SDS在执行修改之前会检查空间是否足够，如果不够用会自动将空间扩展</li>
+</ul>
+<p>（2）获取字符串长度的复杂度为O(1)</p>
+<ul>
+<li>SDS本身保存了自身的长度，所以直接获取就行</li>
+</ul>
+<p>（3）减少内存分配次数</p>
+<ul>
+<li>在C语言中，每次对字符的修改涉及到长度的变动时，都会发生系统对内存的操作（申请或释放）。SDS通过空间预分配和惰性释放极大减少了对内存的操作次数。</li>
+<li>空间预分配：每次涉及到对字符串的操作时候，SDS不仅会为其分配修改所需要的空间，还会为SDS分配额外未使用的空间。</li>
+<li>惰性释放：字符串长度缩短之后，不需要的空间不会立刻释放，而是分配到free空间里面，下次需要的时候直接获取，不需要重新分配内存。</li>
+</ul>
+<p>（4）二进制安全</p>
+<ul>
+<li>不同于C语言特殊的字符保存格式（字符串加末尾空字符），redis的SDS不会受限于任何格式，保存时候不会发生修改，所以它可以用来保存图片，视频等二进制数据。</li>
+</ul>
+<h4 id="3-链表"><a href="#3-链表" class="headerlink" title="3. 链表"></a>3. 链表</h4><p>&emsp;&emsp;C语言本身是没有链表这一数据结构，redis是自己实现的。链表提供了搞笑的节点重排，节点访问，节点增删能力。redis的列表底层实现之一就是链表，而且redis的发布与订阅，慢查询，监视器等功能也用到了链表，redis本身使用链表来保存多个客户端的状态。<br> <img src="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png" alt="redis基本数据结构"></p>
+<h4 id="4-字典（map）"><a href="#4-字典（map）" class="headerlink" title="4. 字典（map）"></a>4. 字典（map）</h4><p>&emsp;&emsp;字典数据结构广泛应用于redis的各种功能当中，包括数据库和哈希键。redis中的字典使用哈希表作为底层实现，每个字典包含了两个哈希表，一个平时使用，一个是在rehash(扩展或收缩hash表)时用到。</p>
+<h4 id="5-跳跃表（skiplist）"><a href="#5-跳跃表（skiplist）" class="headerlink" title="5. 跳跃表（skiplist）"></a>5. 跳跃表（skiplist）</h4><p>&emsp;&emsp;跳跃表是一种有序的数据结构，它通过在每个节点中维持指向其他节点的指针，从而拥有快速访问其他节点的能力。redis选择跳跃表作为有序集合的底层实现之一。</p>
+<h4 id="6-整数集合（intset）"><a href="#6-整数集合（intset）" class="headerlink" title="6. 整数集合（intset）"></a>6. 整数集合（intset）</h4><p>&emsp;&emsp;整数集合是集合键的底层实现之一。当一个集合只用来保存整数，并且数量不是很多的时候，redis就会选择使用整数集合来实现。</p>
+<h4 id="7-压缩表（ziplist）"><a href="#7-压缩表（ziplist）" class="headerlink" title="7. 压缩表（ziplist）"></a>7. 压缩表（ziplist）</h4><p>&emsp;&amp;emsp压缩表是列表和哈希两种数据类型的底层实现之一，压缩表是redis为了节约内存而开发的，它是由特殊编码的连续内存块组成的顺序数据结构。当一个列表只包含少量的键，并且每个键对应的值比较小的时候，redis就会使用压缩表来实现该列表。同样如果一个hash键只包含少量的值，则也会选择压缩表作为其底层实现。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="redis基本数据结构" target="_blank" rel="external">http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/touxiang.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">张副官</span><small class="ml-1x">Developer &amp; Player</small></a></h3>
+        <div>Just a man。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2020/10/15/go%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F/" title="go并发控制方式"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2020/08/25/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpay.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/cofess" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/cofess" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://twitter.com/iwebued" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="https://www.behance.net/cofess" target="_blank" title="Behance" data-toggle=tooltip data-placement=top><i class="icon icon-behance"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '83a7110a010f5947dbb2',
+    clientSecret: 'fc73c0a5144fd5dbde4063fc6969a2f8c8e7b8c3',
+    repo: 'kavinbright.github.io',
+    owner: 'kavinbright',
+    admin: ['kavinbright'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
