@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="搭建grpc环境前情提要我这个demo是在mac(intel)环境实现的，windows和linux大同小异，可自行在网上搜索。 环境依赖 go buf cli  go1234brew install gogo versiongo version go1.17 darwin&#x2F;amd64 bufbuf其实是一种protobuf编译器，相比入传统的protoc命令行方式，buf以配置文件的方式更加方便">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go微服务-grpc与http双网关服务搭建">
+<meta property="og:url" content="http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="搭建grpc环境前情提要我这个demo是在mac(intel)环境实现的，windows和linux大同小异，可自行在网上搜索。 环境依赖 go buf cli  go1234brew install gogo versiongo version go1.17 darwin&#x2F;amd64 bufbuf其实是一种protobuf编译器，相比入传统的protoc命令行方式，buf以配置文件的方式更加方便">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-05-15T14:59:44.000Z">
+<meta property="article:modified_time" content="2022-05-15T15:00:40.323Z">
+<meta property="article:author" content="张副官">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="微服务">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>go微服务-grpc与http双网关服务搭建</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2022/05/09/%E6%84%8F%E5%91%B3/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&text=go微服务-grpc与http双网关服务搭建"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&is_video=false&description=go微服务-grpc与http双网关服务搭建"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go微服务-grpc与http双网关服务搭建&body=Check out this article: http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&name=go微服务-grpc与http双网关服务搭建&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&t=go微服务-grpc与http双网关服务搭建"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAgrpc%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">搭建grpc环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.</span> <span class="toc-text">环境依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#go"><span class="toc-number">1.3.</span> <span class="toc-text">go</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buf"><span class="toc-number">1.4.</span> <span class="toc-text">buf</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B"><span class="toc-number">1.5.</span> <span class="toc-text">开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85go%E6%8F%92%E4%BB%B6"><span class="toc-number">1.6.</span> <span class="toc-text">安装go插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91proto%E6%96%87%E4%BB%B6"><span class="toc-number">1.7.</span> <span class="toc-text">编译proto文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.8.</span> <span class="toc-text">注册服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C"><span class="toc-number">1.8.1.</span> <span class="toc-text">注册</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">1.9.</span> <span class="toc-text">测试</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        go微服务-grpc与http双网关服务搭建
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">张副官</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-15T14:59:44.000Z" itemprop="datePublished">2022-05-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/go/" rel="tag">go</a>, <a class="tag-link-link" href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag">微服务</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="搭建grpc环境"><a href="#搭建grpc环境" class="headerlink" title="搭建grpc环境"></a>搭建grpc环境</h1><h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p>我这个demo是在mac(intel)环境实现的，windows和linux大同小异，可自行在网上搜索。</p>
+<h2 id="环境依赖"><a href="#环境依赖" class="headerlink" title="环境依赖"></a>环境依赖</h2><ul>
+<li>go</li>
+<li>buf cli</li>
+</ul>
+<h2 id="go"><a href="#go" class="headerlink" title="go"></a>go</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">brew install go</span><br><span class="line"></span><br><span class="line">go version</span><br><span class="line">go version go1.17 darwin/amd64</span><br></pre></td></tr></table></figure>
+<h2 id="buf"><a href="#buf" class="headerlink" title="buf"></a>buf</h2><p><a target="_blank" rel="noopener" href="https://docs.buf.build/installation">buf</a>其实是一种protobuf编译器，相比入传统的protoc命令行方式，buf以配置文件的方式更加方便明了。buf又有以下几个优势：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.buf.build/reference/internal-compiler">性能更高的Protobuf 编译器</a>。</li>
+<li>强制执行良好的 API 设计选择和结构的 <a target="_blank" rel="noopener" href="https://docs.buf.build/lint/overview">linter</a>。</li>
+<li>在源代码或线路级别强制兼容性的<a target="_blank" rel="noopener" href="https://docs.buf.build/breaking/overview">重大更改检测器。</a></li>
+<li>基于可配置模板调用插件的<a target="_blank" rel="noopener" href="https://docs.buf.build/generate/usage">生成器。</a></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">BIN=<span class="string">&quot;/usr/local/bin&quot;</span> &amp;&amp; \</span><br><span class="line">VERSION=<span class="string">&quot;1.4.0&quot;</span> &amp;&amp; \</span><br><span class="line">  curl -sSL \</span><br><span class="line">    <span class="string">&quot;https://github.com/bufbuild/buf/releases/download/v<span class="variable">$&#123;VERSION&#125;</span>/buf-<span class="subst">$(uname -s)</span>-<span class="subst">$(uname -m)</span>&quot;</span> \</span><br><span class="line">    -o <span class="string">&quot;<span class="variable">$&#123;BIN&#125;</span>/buf&quot;</span> &amp;&amp; \</span><br><span class="line">  chmod +x <span class="string">&quot;<span class="variable">$&#123;BIN&#125;</span>/buf&quot;</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://docs.buf.build/installation">官网参考</a></p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><ol>
+<li>在你的工作目录创建一个文件夹用于存放项目</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdri example_grpc</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>创建以下目录结构</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">example_grpc</span><br><span class="line">  - api</span><br><span class="line">  - cmd</span><br><span class="line">  - pkg </span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>初始化项目</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go mod init example_grpc</span><br><span class="line">go mod tidy</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>在api/下创建api.proto文件</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"><span class="keyword">package</span> api;</span><br><span class="line"></span><br><span class="line">option go_package = <span class="string">&quot;/api&quot;</span>;</span><br><span class="line"></span><br><span class="line">service Example &#123;</span><br><span class="line">  rpc Ping(PingRequest) returns (PingResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message PingRequest &#123;&#125;</span><br><span class="line"></span><br><span class="line">message PingResponse &#123;</span><br><span class="line">  <span class="keyword">int32</span> Code = <span class="number">10</span>;</span><br><span class="line">  <span class="keyword">string</span> Msg = <span class="number">20</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>在项目根目录下创建以下buf配置文件：</li>
+</ol>
+<ul>
+<li>buf.yaml<blockquote>
+<p>配置依赖</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">v1beta1</span></span><br><span class="line"><span class="attr">name:</span> <span class="string">buf.build/adjutant/grpc_example</span></span><br><span class="line"><span class="attr">deps:</span></span><br><span class="line">  <span class="comment"># it will download this dep if you run buf generate</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">buf.build/beta/googleapis</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">buf.build/grpc-ecosystem/grpc-gateway</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>buf.gen.yaml<blockquote>
+<p>指定插件和生成的文件</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">v1beta1</span></span><br><span class="line"><span class="attr">plugins:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">go</span></span><br><span class="line">    <span class="attr">out:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">paths=source_relative</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">go-grpc</span></span><br><span class="line">    <span class="attr">out:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">paths=source_relative</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">require_unimplemented_servers=false</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">grpc-gateway</span></span><br><span class="line">    <span class="attr">out:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">paths=source_relative</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">grpc_api_configuration=gw_mapping.yaml</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">openapiv2</span></span><br><span class="line">    <span class="attr">out:</span> <span class="string">.</span></span><br><span class="line">    <span class="attr">opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">grpc_api_configuration=gw_mapping.yaml</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>gw.mapping.yaml<blockquote>
+<p>grpc方法和http接口路由配置</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">type:</span> <span class="string">google.api.Service</span></span><br><span class="line"><span class="attr">config_version:</span> <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Please refer google.api.Http in https://github.com/googleapis/googleapis/blob/master/google/api/http.proto file for details.</span></span><br><span class="line"><span class="attr">http:</span></span><br><span class="line">  <span class="attr">rules:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">selector:</span> <span class="string">api.Example.Ping</span></span><br><span class="line">      <span class="attr">get:</span> <span class="string">/ping</span></span><br></pre></td></tr></table></figure>
+<h2 id="安装go插件"><a href="#安装go插件" class="headerlink" title="安装go插件"></a>安装go插件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">go install \</span><br><span class="line">    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \</span><br><span class="line">    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \</span><br><span class="line">    google.golang.org/protobuf/cmd/protoc-gen-go \</span><br><span class="line">    google.golang.org/grpc/cmd/protoc-gen-go-grpc</span><br></pre></td></tr></table></figure>
+<h2 id="编译proto文件"><a href="#编译proto文件" class="headerlink" title="编译proto文件"></a>编译proto文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">buf mod update</span><br><span class="line">buf generate</span><br></pre></td></tr></table></figure>
+<p>执行上面两条命令之后，得到以下文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- api/</span><br><span class="line">  - api.pb.go</span><br><span class="line">  - api.gw.pb.go</span><br><span class="line">  - api.pb.go</span><br><span class="line">  - api.swagger.json</span><br></pre></td></tr></table></figure>
+<h2 id="注册服务"><a href="#注册服务" class="headerlink" title="注册服务"></a>注册服务</h2><h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><p>在cmd/下创建main.go文件，内容为</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;example_grpc/api&quot;</span></span><br><span class="line">	<span class="string">&quot;example_grpc/pkg/handler&quot;</span></span><br><span class="line">	<span class="string">&quot;github.com/grpc-ecosystem/grpc-gateway/v2/runtime&quot;</span></span><br><span class="line">	<span class="string">&quot;google.golang.org/grpc&quot;</span></span><br><span class="line">	<span class="string">&quot;google.golang.org/grpc/credentials/insecure&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">	<span class="string">&quot;net&quot;</span></span><br><span class="line">	<span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	grpcServerEndpoint = <span class="string">&quot;127.0.0.1:9091&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	<span class="keyword">go</span> toGRPC()</span><br><span class="line">	<span class="keyword">go</span> toHTTP()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">select</span> &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">toGRPC</span><span class="params">()</span></span>&#123;</span><br><span class="line">	s := grpc.NewServer()</span><br><span class="line"></span><br><span class="line">	api.RegisterExampleServer(s, &amp;handler.Handler&#123;&#125;)</span><br><span class="line"></span><br><span class="line">	lis, err := net.Listen(<span class="string">&quot;tcp&quot;</span>, grpcServerEndpoint)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Panicf(<span class="string">&quot;net.Listen err: %+v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := s.Serve(lis); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Panicf(<span class="string">&quot;s.Server err: %+v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">toHTTP</span><span class="params">()</span></span>&#123;</span><br><span class="line">	ctx := context.Background()</span><br><span class="line">	ctx, cancel := context.WithCancel(ctx)</span><br><span class="line">	<span class="keyword">defer</span> cancel()</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Register gRPC server endpoint</span></span><br><span class="line">	<span class="comment">// Note: Make sure the gRPC server is running properly and accessible</span></span><br><span class="line">	mux := runtime.NewServeMux()</span><br><span class="line">	opts := []grpc.DialOption&#123;grpc.WithTransportCredentials(insecure.NewCredentials())&#125;</span><br><span class="line">	err := api.RegisterExampleHandlerFromEndpoint(ctx, mux,  grpcServerEndpoint, opts)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Panicf(<span class="string">&quot;RegisterLabHandlerFromEndpoint err: %+v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Start HTTP server (and proxy calls to gRPC server endpoint)</span></span><br><span class="line">	<span class="keyword">if</span> err := http.ListenAndServe(<span class="string">&quot;:8082&quot;</span>, mux); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Panicf(<span class="string">&quot;ListenAndServe err: %+v&quot;</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在pkg/api/下创建ping.go文件</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> handler</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;context&quot;</span></span><br><span class="line">	<span class="string">&quot;example_grpc/api&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(Handler)</span> <span class="title">Ping</span><span class="params">(ctx context.Context, request *api.PingRequest)</span> <span class="params">(*api.PingResponse, error)</span></span> &#123;</span><br><span class="line">	resp := &amp;api.PingResponse&#123;</span><br><span class="line">		Code: <span class="number">0</span>,</span><br><span class="line">		Msg: <span class="string">&quot;ok&quot;</span>,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> resp, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request GET <span class="string">&#x27;http://127.0.0.1:8082/ping&#x27;</span></span><br><span class="line">&#123;<span class="string">&quot;Code&quot;</span>:0,<span class="string">&quot;Msg&quot;</span>:<span class="string">&quot;ok&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAgrpc%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">搭建grpc环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="toc-number">1.1.</span> <span class="toc-text">前情提要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.</span> <span class="toc-text">环境依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#go"><span class="toc-number">1.3.</span> <span class="toc-text">go</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buf"><span class="toc-number">1.4.</span> <span class="toc-text">buf</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B"><span class="toc-number">1.5.</span> <span class="toc-text">开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85go%E6%8F%92%E4%BB%B6"><span class="toc-number">1.6.</span> <span class="toc-text">安装go插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91proto%E6%96%87%E4%BB%B6"><span class="toc-number">1.7.</span> <span class="toc-text">编译proto文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.8.</span> <span class="toc-text">注册服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C"><span class="toc-number">1.8.1.</span> <span class="toc-text">注册</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">1.9.</span> <span class="toc-text">测试</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&text=go微服务-grpc与http双网关服务搭建"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&is_video=false&description=go微服务-grpc与http双网关服务搭建"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go微服务-grpc与http双网关服务搭建&body=Check out this article: http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&title=go微服务-grpc与http双网关服务搭建"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&name=go微服务-grpc与http双网关服务搭建&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2022/05/15/go%E5%BE%AE%E6%9C%8D%E5%8A%A1-grpc%E4%B8%8Ehttp%E5%8F%8C%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/&t=go微服务-grpc与http双网关服务搭建"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2022
+    张副官
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
