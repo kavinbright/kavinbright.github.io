@@ -6,23 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="1.osi模型与五层架构模型 2.五层架构模型中各层对应的网络协议   层 协议     应用层 HTTP，SMTP   传输层 TCP, UPD   网络层 IP, ICMP   数据链路层 PPP   物理层 IEEE802.3    3.TCP三次握手和四次握手三次握手（建立连接） TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。  第一次：Client发送一个包含">
+    <meta name="description" content="1.osi模型与五层架构模型 2.五层架构模型中各层对应的网络协议   层 协议    应用层 HTTP，SMTP   传输层 TCP, UPD   网络层 IP, ICMP   数据链路层 PPP   物理层 IEEE802.3   3.TCP三次握手和四次握手三次握手（建立连接） TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。   第一次：Client发送一个包含标">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常见网络知识总结">
 <meta property="og:url" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="张副官">
-<meta property="og:description" content="1.osi模型与五层架构模型 2.五层架构模型中各层对应的网络协议   层 协议     应用层 HTTP，SMTP   传输层 TCP, UPD   网络层 IP, ICMP   数据链路层 PPP   物理层 IEEE802.3    3.TCP三次握手和四次握手三次握手（建立连接） TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。  第一次：Client发送一个包含">
+<meta property="og:description" content="1.osi模型与五层架构模型 2.五层架构模型中各层对应的网络协议   层 协议    应用层 HTTP，SMTP   传输层 TCP, UPD   网络层 IP, ICMP   数据链路层 PPP   物理层 IEEE802.3   3.TCP三次握手和四次握手三次握手（建立连接） TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。   第一次：Client发送一个包含标">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-09-56.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-10-56.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-11-52.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-09-56.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-10-56.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-11-52.png">
 <meta property="article:published_time" content="2020-06-13T16:08:12.000Z">
 <meta property="article:modified_time" content="2021-04-04T13:17:14.795Z">
 <meta property="article:author" content="张副官">
 <meta property="article:tag" content="网络">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.zhangfuguan.top/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png">
     
     
       
@@ -52,9 +52,11 @@
     <!-- rss -->
     
     
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.4.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -73,6 +75,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </span>
@@ -111,7 +115,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-osi%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">1.osi模型与五层架构模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%90%84%E5%B1%82%E5%AF%B9%E5%BA%94%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.</span> <span class="toc-text">2.五层架构模型中各层对应的网络协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">3.</span> <span class="toc-text">3.TCP三次握手和四次握手</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">三次握手（建立连接）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">四次握手（断开连接）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%8F%AF%E4%BB%A5%E6%8D%A2%E6%88%90%E4%B8%A4%E6%AC%A1%E5%90%97"><span class="toc-number">5.</span> <span class="toc-text">3. 三次握手可以换成两次吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%AD%E5%BC%80%E8%A6%81%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">6.</span> <span class="toc-text">4. 为什么断开要四次握手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E7%82%B9%E5%87%BB%E2%80%9Cwww-baidu-com-quot-%E4%B9%8B%E5%90%8E%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">5.浏览器中点击“www.baidu.com&quot;之后发生什么</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-osi%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">1.osi模型与五层架构模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%90%84%E5%B1%82%E5%AF%B9%E5%BA%94%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.</span> <span class="toc-text">2.五层架构模型中各层对应的网络协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">3.</span> <span class="toc-text">3.TCP三次握手和四次握手</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">三次握手（建立连接）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">四次握手（断开连接）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%8F%AF%E4%BB%A5%E6%8D%A2%E6%88%90%E4%B8%A4%E6%AC%A1%E5%90%97"><span class="toc-number">5.</span> <span class="toc-text">3. 三次握手可以换成两次吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%AD%E5%BC%80%E8%A6%81%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">6.</span> <span class="toc-text">4. 为什么断开要四次握手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E7%82%B9%E5%87%BB%E2%80%9C"><span class="toc-number">7.</span> <span class="toc-text">5.浏览器中点击“www.baidu.com&quot;之后发生什么</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -155,7 +159,7 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h4 id="1-osi模型与五层架构模型"><a href="#1-osi模型与五层架构模型" class="headerlink" title="1.osi模型与五层架构模型"></a>1.osi模型与五层架构模型</h4><p><img src="/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png" alt="常见网络知识总结"></p>
+    <h4 id="1-osi模型与五层架构模型"><a href="#1-osi模型与五层架构模型" class="headerlink" title="1.osi模型与五层架构模型"></a>1.osi模型与五层架构模型</h4><p><img src="/./%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-36-07.png" alt="常见网络知识总结"></p>
 <h4 id="2-五层架构模型中各层对应的网络协议"><a href="#2-五层架构模型中各层对应的网络协议" class="headerlink" title="2.五层架构模型中各层对应的网络协议"></a>2.五层架构模型中各层对应的网络协议</h4><table>
 <thead>
 <tr>
@@ -163,8 +167,7 @@
 <th>协议</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>应用层</td>
 <td>HTTP，SMTP</td>
 </tr>
@@ -184,33 +187,32 @@
 <td>物理层</td>
 <td>IEEE802.3</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <h4 id="3-TCP三次握手和四次握手"><a href="#3-TCP三次握手和四次握手" class="headerlink" title="3.TCP三次握手和四次握手"></a>3.TCP三次握手和四次握手</h4><h5 id="三次握手（建立连接）"><a href="#三次握手（建立连接）" class="headerlink" title="三次握手（建立连接）"></a>三次握手（建立连接）</h5><blockquote>
-<p>TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。<br><img src="/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-09-56.png" alt="常见网络知识总结"></p>
-<ol>
-<li>第一次：Client发送一个包含标志位SYN=1, Seq=随机数J的数据包给Server。Client处于SYN_SENT状态。</li>
-<li>第二次：Server检查SYN=1之后知道Client想建立连接，发送一个包含SYN=1, ACK=1， ACKnum=J+1，Seq=随机数K的数据包给Client。Server处于SYN_RCVD状态。</li>
-<li>第三次：Client检查SYN=1,ACK=1,ACKnum=J+1之后，发送ACKnum=K+1给Server,Server检查ACKnum=k+1之后连接建立。Client和Server均处于established的状态。<br><img src="/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-10-56.png" alt="常见网络知识总结"></li>
-</ol>
+<p>TCP是一种面向连接的协议，在发送数据之前，双方必须建立一条可信任的连接。<br><img src="/./%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-09-56.png" alt="常见网络知识总结"></p>
 </blockquote>
+<ol>
+<li>第一次：Client发送一个包含标志位SYN&#x3D;1, Seq&#x3D;随机数J的数据包给Server。Client处于SYN_SENT状态。</li>
+<li>第二次：Server检查SYN&#x3D;1之后知道Client想建立连接，发送一个包含SYN&#x3D;1, ACK&#x3D;1， ACKnum&#x3D;J+1，Seq&#x3D;随机数K的数据包给Client。Server处于SYN_RCVD状态。</li>
+<li>第三次：Client检查SYN&#x3D;1,ACK&#x3D;1,ACKnum&#x3D;J+1之后，发送ACKnum&#x3D;K+1给Server,Server检查ACKnum&#x3D;k+1之后连接建立。Client和Server均处于established的状态。<br><img src="/./%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-10-56.png" alt="常见网络知识总结"></li>
+</ol>
 <blockquote>
 <p>ACK: 确认连接成功标志位，ACKnum确认数据以及发送完成标志位。</p>
 </blockquote>
 <h4 id="四次握手（断开连接）"><a href="#四次握手（断开连接）" class="headerlink" title="四次握手（断开连接）"></a>四次握手（断开连接）</h4><blockquote>
-<p>TCP是全双工通信，双方可以互相发送数据。所以需要两次确认。<br><img src="/2020/06/14/%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-11-52.png" alt="常见网络知识总结"></p>
+<p>TCP是全双工通信，双方可以互相发送数据。所以需要两次确认。<br><img src="/./%E5%B8%B8%E8%A7%81%E7%BD%91%E7%BB%9C%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/2020-06-14-00-11-52.png" alt="常见网络知识总结"></p>
+</blockquote>
 <ol>
 <li>第一次挥手：Client发送一个FIN，<strong>用来关闭Client到Server的数据传送</strong>，Client进入FIN_WAIT_1状态。</li>
 <li>第二次挥手：Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与SYN相同，一个FIN占用一个序号），Server进入CLOSE_WAIT状态。此时TCP链接处于半关闭状态，即客户端已经没有要发送的数据了，但服务端若发送数据，则客户端仍要接收。</li>
 <li>第三次挥手：Server发送一个FIN，<strong>用来关闭Server到Client的数据传送</strong>，Server进入LAST_ACK状态。</li>
 <li>第四次挥手：Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号+1，Server进入CLOSED状态，完成四次挥手。</li>
 </ol>
-</blockquote>
 <h4 id="3-三次握手可以换成两次吗"><a href="#3-三次握手可以换成两次吗" class="headerlink" title="3. 三次握手可以换成两次吗"></a>3. 三次握手可以换成两次吗</h4><p>不行，三次握手可以防止向已失效的连接返送请求。<br><a target="_blank" rel="noopener" href="https://juejin.im/post/5daf0e576fb9a04e3348d97b#heading-1">网络知识点</a></p>
 <h4 id="4-为什么断开要四次握手"><a href="#4-为什么断开要四次握手" class="headerlink" title="4. 为什么断开要四次握手"></a>4. 为什么断开要四次握手</h4><p>TCP 协议是一种面向连接的、可靠的、基于字节流的运输层通信协议。TCP 是全双工模式，这就意味着，当 A 向 B 发出 FIN 报文段时，只是表示 A 已经没有数据要发送了，而此时 A 还是能够接受到来自 B 发出的数据；B 向 A 发出 ACK 报文段也只是告诉 A ，它自己知道 A 没有数据要发了，但 B 还是能够向 A 发送数据。</p>
-<h4 id="5-浏览器中点击“www-baidu-com-quot-之后发生什么"><a href="#5-浏览器中点击“www-baidu-com-quot-之后发生什么" class="headerlink" title="5.浏览器中点击“www.baidu.com&quot;之后发生什么"></a>5.浏览器中点击“<a target="_blank" rel="noopener" href="http://www.baidu.com&quot;之后发生什么">www.baidu.com&quot;之后发生什么</a></h4><ol>
+<h4 id="5-浏览器中点击“"><a href="#5-浏览器中点击“" class="headerlink" title="5.浏览器中点击“"></a>5.浏览器中点击“<a target="_blank" rel="noopener" href="http://www.baidu.com" 之后发生什么 ">www.baidu.com&quot;之后发生什么</a></h4><ol>
 <li>由域名→IP地址 寻找IP地址的过程依次经过了浏览器缓存、系统缓存、hosts文件、路由器缓存、 递归搜索根域名服务器。（DNS域名解析）</li>
-<li>建立TCP/IP连接（三次握手具体过程）</li>
+<li>建立TCP&#x2F;IP连接（三次握手具体过程）</li>
 <li>由浏览器发送一个HTTP请求</li>
 <li>经过路由器的转发，通过服务器的防火墙，该HTTP请求到达了服务器</li>
 <li>服务器处理该HTTP请求，返回一个HTML文件</li>
@@ -220,6 +222,7 @@
 
   </div>
 </article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
 
     <div class="blog-post-comments">
         <div id="disqus_thread">
@@ -243,12 +246,14 @@
           <li><a href="/about/">关于</a></li>
          
           <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">RSS</a></li>
         
       </ul>
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-osi%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">1.osi模型与五层架构模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%90%84%E5%B1%82%E5%AF%B9%E5%BA%94%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.</span> <span class="toc-text">2.五层架构模型中各层对应的网络协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">3.</span> <span class="toc-text">3.TCP三次握手和四次握手</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">三次握手（建立连接）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">四次握手（断开连接）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%8F%AF%E4%BB%A5%E6%8D%A2%E6%88%90%E4%B8%A4%E6%AC%A1%E5%90%97"><span class="toc-number">5.</span> <span class="toc-text">3. 三次握手可以换成两次吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%AD%E5%BC%80%E8%A6%81%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">6.</span> <span class="toc-text">4. 为什么断开要四次握手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E7%82%B9%E5%87%BB%E2%80%9Cwww-baidu-com-quot-%E4%B9%8B%E5%90%8E%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">7.</span> <span class="toc-text">5.浏览器中点击“www.baidu.com&quot;之后发生什么</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-osi%E6%A8%A1%E5%9E%8B%E4%B8%8E%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">1.osi模型与五层架构模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E4%BA%94%E5%B1%82%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B%E4%B8%AD%E5%90%84%E5%B1%82%E5%AF%B9%E5%BA%94%E7%9A%84%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.</span> <span class="toc-text">2.五层架构模型中各层对应的网络协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">3.</span> <span class="toc-text">3.TCP三次握手和四次握手</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">三次握手（建立连接）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%88%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">四次握手（断开连接）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%8F%AF%E4%BB%A5%E6%8D%A2%E6%88%90%E4%B8%A4%E6%AC%A1%E5%90%97"><span class="toc-number">5.</span> <span class="toc-text">3. 三次握手可以换成两次吗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%AD%E5%BC%80%E8%A6%81%E5%9B%9B%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="toc-number">6.</span> <span class="toc-text">4. 为什么断开要四次握手</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E7%82%B9%E5%87%BB%E2%80%9C"><span class="toc-number">7.</span> <span class="toc-text">5.浏览器中点击“www.baidu.com&quot;之后发生什么</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
@@ -284,7 +289,7 @@
     Copyright &copy;
     
     
-    2016-2023
+    2019-2023
     张副官
   </div>
   <div class="footer-right">
@@ -298,6 +303,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </nav>

@@ -47,9 +47,11 @@
     <!-- rss -->
     
     
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.4.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -68,6 +70,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </span>
@@ -158,23 +162,21 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span></span> &#123;</span><br><span class="line">	name := <span class="string">&quot;Jane&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;My name is &quot;</span>, name)</span><br><span class="line">	&#125;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>B</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">B</span><span class="params">()</span></span> &#123;</span><br><span class="line">	name := <span class="string">&quot;Jane&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;My name is &quot;</span>, name)</span><br><span class="line">	&#125;(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">B</span><span class="params">()</span></span> &#123;</span><br><span class="line">	name := <span class="string">&quot;Jane&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">(name <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;My name is &quot;</span>, name)</span><br><span class="line">	&#125;(name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>C</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">C</span><span class="params">()</span></span> &#123;</span><br><span class="line">	name := <span class="string">&quot;Jane&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;My name is Maria&quot;</span>)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;this is &quot;</span>, name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">C</span><span class="params">()</span></span> &#123;</span><br><span class="line">	name := <span class="string">&quot;Jane&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">&quot;My name is Maria&quot;</span>)</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	fmt.Println(<span class="string">&quot;this is &quot;</span>, name)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
-<p><strong>A </strong> 是标准的闭包，闭包是用了当前函数作用域外的变量name</p>
+<p>**A ** 是标准的闭包，闭包是用了当前函数作用域外的变量name</p>
 <p><strong>B</strong> 不是闭包，函数内的name是自己作用域的变量，是通过参数传递进来的</p>
 <p><strong>C</strong> 不是闭包，没有是用作用域外的环境，外部环境对其没用影响</p>
 <h3 id="闭包的使用"><a href="#闭包的使用" class="headerlink" title="闭包的使用"></a>闭包的使用</h3><p><strong>判断一下程序运行的结果</strong></p>
 <ul>
 <li><p>A</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fac := fA(<span class="number">10</span>)</span><br><span class="line">	fac()</span><br><span class="line">	fac()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fA</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        i++</span><br><span class="line">        fmt.Println(<span class="string">&quot;i:&quot;</span>, i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fac := fA(<span class="number">10</span>)</span><br><span class="line">	fac()</span><br><span class="line">	fac()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fA</span><span class="params">(i <span class="type">int</span>)</span></span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        i++</span><br><span class="line">        fmt.Println(<span class="string">&quot;i:&quot;</span>, i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>B</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fbc := fB(<span class="number">10</span>)</span><br><span class="line">	fbc()</span><br><span class="line">	fbc()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fB</span><span class="params">(i <span class="keyword">int</span>)</span> <span class="title">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    i++</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;i:&quot;</span>, i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	fbc := fB(<span class="number">10</span>)</span><br><span class="line">	fbc()</span><br><span class="line">	fbc()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fB</span><span class="params">(i <span class="type">int</span>)</span></span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    i++</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;i:&quot;</span>, i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <blockquote>
 <p>A的结果：<br>11<br>12</p>
@@ -190,6 +192,7 @@
 
   </div>
 </article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
 
     <div class="blog-post-comments">
         <div id="disqus_thread">
@@ -213,6 +216,8 @@
           <li><a href="/about/">关于</a></li>
          
           <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">RSS</a></li>
         
       </ul>
     </div>
@@ -254,7 +259,7 @@
     Copyright &copy;
     
     
-    2016-2023
+    2019-2023
     张副官
   </div>
   <div class="footer-right">
@@ -268,6 +273,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </nav>

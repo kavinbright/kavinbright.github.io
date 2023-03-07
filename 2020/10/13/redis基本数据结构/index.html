@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="张副官">
 <meta property="og:description" content="redis面试系列：数据结构 本文参考了《redis设计与实现》第二版  1. 数据类型 常见数据类型 string 字符串(简单动态字符串[sds],int整数) list 列表(链表[linkedlist]，压缩表[ziplist]) hash 哈希（字典[hashtable]，压缩表[ziplist]） set 集合（字典[hashtable], 整数集合[intset]） zset 有序集">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png">
 <meta property="article:published_time" content="2020-10-12T17:08:35.000Z">
 <meta property="article:modified_time" content="2021-04-04T13:17:14.787Z">
 <meta property="article:author" content="张副官">
 <meta property="article:tag" content="redis">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.zhangfuguan.top/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png">
     
     
       
@@ -51,9 +51,11 @@
     <!-- rss -->
     
     
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 5.4.0"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body class="max-width mx-auto px3 ltr">
     
@@ -72,6 +74,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </span>
@@ -169,22 +173,22 @@
 <li>其他高级类型<ul>
 <li>bitmap</li>
 <li>HyperLogLog</li>
-<li>Pub/Sub</li>
+<li>Pub&#x2F;Sub</li>
 <li>Geo</li>
 <li>BloomFilter</li>
 </ul>
 </li>
 </ul>
 <p>此文主要分析常见数据结构的应用场景、实现原理。</p>
-<h4 id="2-简单动态字符串（SDS）"><a href="#2-简单动态字符串（SDS）" class="headerlink" title="2. 简单动态字符串（SDS）"></a>2. 简单动态字符串（SDS）</h4><p>&emsp;&emsp;redis是基于c语言实现的，但是redis的字符串却没有直接使用c语言的string类型，而是基于自己实现的简单字符串（simple dynamic string，简称sds）。sds的数据结构如下所示：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;</span><br><span class="line">    <span class="keyword">int</span> len;</span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-简单动态字符串（SDS）"><a href="#2-简单动态字符串（SDS）" class="headerlink" title="2. 简单动态字符串（SDS）"></a>2. 简单动态字符串（SDS）</h4><p>&amp;emsp;&amp;emsp;redis是基于c语言实现的，但是redis的字符串却没有直接使用c语言的string类型，而是基于自己实现的简单字符串（simple dynamic string，简称sds）。sds的数据结构如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span></span><br><span class="line">    <span class="type">int</span> <span class="built_in">free</span>;</span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">    <span class="type">char</span> buf[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>每一个字符串对应底层的sds是由三部分组成，分别是空闲空间长度，字符串长度，保存字符串的字节数组</li>
 <li>free表示当前空闲的字节数，即空闲空间长度</li>
 <li>len是用来保存当前字符串使用的字节长度，通常用来表示字符串的长度</li>
 <li>redis的字符串在sds底层是通过字节数组的方式保存在buf当中</li>
 </ul>
-<p>为什么redis放着c语言现成的字符串类型不用，却自己去实现一套sds呢？从sds的数据结构可以看出它具备以下几个特点：<br> <img src="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png" alt="redis基本数据结构"></p>
+<p>为什么redis放着c语言现成的字符串类型不用，却自己去实现一套sds呢？从sds的数据结构可以看出它具备以下几个特点：<br> <img src="/./redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/sds.png" alt="redis基本数据结构"></p>
 <p>（1）有效防止缓存区溢出</p>
 <ul>
 <li>SDS在执行修改之前会检查空间是否足够，如果不够用会自动将空间扩展</li>
@@ -203,14 +207,15 @@
 <ul>
 <li>不同于C语言特殊的字符保存格式（字符串加末尾空字符），redis的SDS不会受限于任何格式，保存时候不会发生修改，所以它可以用来保存图片，视频等二进制数据。</li>
 </ul>
-<h4 id="3-链表"><a href="#3-链表" class="headerlink" title="3. 链表"></a>3. 链表</h4><p>&emsp;&emsp;C语言本身是没有链表这一数据结构，redis是自己实现的。链表提供了搞笑的节点重排，节点访问，节点增删能力。redis的列表底层实现之一就是链表，而且redis的发布与订阅，慢查询，监视器等功能也用到了链表，redis本身使用链表来保存多个客户端的状态。<br> <img src="/2020/10/13/redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png" alt="redis基本数据结构"></p>
-<h4 id="4-字典（map）"><a href="#4-字典（map）" class="headerlink" title="4. 字典（map）"></a>4. 字典（map）</h4><p>&emsp;&emsp;字典数据结构广泛应用于redis的各种功能当中，包括数据库和哈希键。redis中的字典使用哈希表作为底层实现，每个字典包含了两个哈希表，一个平时使用，一个是在rehash(扩展或收缩hash表)时用到。</p>
-<h4 id="5-跳跃表（skiplist）"><a href="#5-跳跃表（skiplist）" class="headerlink" title="5. 跳跃表（skiplist）"></a>5. 跳跃表（skiplist）</h4><p>&emsp;&emsp;跳跃表是一种有序的数据结构，它通过在每个节点中维持指向其他节点的指针，从而拥有快速访问其他节点的能力。redis选择跳跃表作为有序集合的底层实现之一。</p>
-<h4 id="6-整数集合（intset）"><a href="#6-整数集合（intset）" class="headerlink" title="6. 整数集合（intset）"></a>6. 整数集合（intset）</h4><p>&emsp;&emsp;整数集合是集合键的底层实现之一。当一个集合只用来保存整数，并且数量不是很多的时候，redis就会选择使用整数集合来实现。</p>
-<h4 id="7-压缩表（ziplist）"><a href="#7-压缩表（ziplist）" class="headerlink" title="7. 压缩表（ziplist）"></a>7. 压缩表（ziplist）</h4><p>&emsp;&amp;emsp压缩表是列表和哈希两种数据类型的底层实现之一，压缩表是redis为了节约内存而开发的，它是由特殊编码的连续内存块组成的顺序数据结构。当一个列表只包含少量的键，并且每个键对应的值比较小的时候，redis就会使用压缩表来实现该列表。同样如果一个hash键只包含少量的值，则也会选择压缩表作为其底层实现。</p>
+<h4 id="3-链表"><a href="#3-链表" class="headerlink" title="3. 链表"></a>3. 链表</h4><p>&amp;emsp;&amp;emsp;C语言本身是没有链表这一数据结构，redis是自己实现的。链表提供了搞笑的节点重排，节点访问，节点增删能力。redis的列表底层实现之一就是链表，而且redis的发布与订阅，慢查询，监视器等功能也用到了链表，redis本身使用链表来保存多个客户端的状态。<br> <img src="/./redis%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/linkedlist.png" alt="redis基本数据结构"></p>
+<h4 id="4-字典（map）"><a href="#4-字典（map）" class="headerlink" title="4. 字典（map）"></a>4. 字典（map）</h4><p>&amp;emsp;&amp;emsp;字典数据结构广泛应用于redis的各种功能当中，包括数据库和哈希键。redis中的字典使用哈希表作为底层实现，每个字典包含了两个哈希表，一个平时使用，一个是在rehash(扩展或收缩hash表)时用到。</p>
+<h4 id="5-跳跃表（skiplist）"><a href="#5-跳跃表（skiplist）" class="headerlink" title="5. 跳跃表（skiplist）"></a>5. 跳跃表（skiplist）</h4><p>&amp;emsp;&amp;emsp;跳跃表是一种有序的数据结构，它通过在每个节点中维持指向其他节点的指针，从而拥有快速访问其他节点的能力。redis选择跳跃表作为有序集合的底层实现之一。</p>
+<h4 id="6-整数集合（intset）"><a href="#6-整数集合（intset）" class="headerlink" title="6. 整数集合（intset）"></a>6. 整数集合（intset）</h4><p>&amp;emsp;&amp;emsp;整数集合是集合键的底层实现之一。当一个集合只用来保存整数，并且数量不是很多的时候，redis就会选择使用整数集合来实现。</p>
+<h4 id="7-压缩表（ziplist）"><a href="#7-压缩表（ziplist）" class="headerlink" title="7. 压缩表（ziplist）"></a>7. 压缩表（ziplist）</h4><p>&amp;emsp;&amp;emsp压缩表是列表和哈希两种数据类型的底层实现之一，压缩表是redis为了节约内存而开发的，它是由特殊编码的连续内存块组成的顺序数据结构。当一个列表只包含少量的键，并且每个键对应的值比较小的时候，redis就会使用压缩表来实现该列表。同样如果一个hash键只包含少量的值，则也会选择压缩表作为其底层实现。</p>
 
   </div>
 </article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
 
     <div class="blog-post-comments">
         <div id="disqus_thread">
@@ -234,6 +239,8 @@
           <li><a href="/about/">关于</a></li>
          
           <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">RSS</a></li>
         
       </ul>
     </div>
@@ -275,7 +282,7 @@
     Copyright &copy;
     
     
-    2016-2023
+    2019-2023
     张副官
   </div>
   <div class="footer-right">
@@ -289,6 +296,8 @@
        --><li><a href="/about/">关于</a></li><!--
      --><!--
        --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">RSS</a></li><!--
      -->
       </ul>
     </nav>
