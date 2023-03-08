@@ -13,14 +13,14 @@
 <meta property="og:site_name" content="张副官">
 <meta property="og:description" content="GO内存管理What ?内存的分配，回收，释放的过程。go的内存分配基于TCMalloc的原理实现。通常我们说内存管理指的是堆（Heap）内存管理，因为栈（Stack）不需要我们关心。 关于tcmalloctcmalloc是一个内存管理库，全称Thread-Cache Malloc，理解为带缓存的内存管理，其实就是为每一个线程创建一个缓存，每次为线程分配内存的时候，首先判断其大小，较小的内存块（小">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.zhangfuguan.top/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/38720_10.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/38720_10.png">
 <meta property="article:published_time" content="2020-08-15T16:29:58.000Z">
 <meta property="article:modified_time" content="2021-04-04T13:17:14.785Z">
 <meta property="article:author" content="张副官">
 <meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.zhangfuguan.top/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png">
     
     
       
@@ -169,14 +169,14 @@
 <li><p>PageHead：其实是堆内存的抽象，也是由若干链表组成，每个链表包含多个Span，每个Span其实使用多个Page组成。当CentralCache不足的时候，会从PageHead中获取，PageHead会将Span分成若干个内存块，放到CentralCache中。当CentralCache空闲内存太多时，会将一部分返还给PageHeap。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- PageHeap会产生多个CentralCache竞争，所以也是需要添加锁。</span><br></pre></td></tr></table></figure></li>
 </ul>
-<p><img src="/./go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png"></p>
+<p><img src="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/image-202008122256022581597244742123.png"></p>
 <h5 id="TCMalloc内存分配"><a href="#TCMalloc内存分配" class="headerlink" title="TCMalloc内存分配"></a>TCMalloc内存分配</h5><ul>
 <li>小对象直接从ThredCache中分配。</li>
 <li>中等对象从PageHead中选择合适数量的Span进行分配。</li>
 <li>大对象则从lagre span set分配。</li>
 </ul>
 <hr>
-<h4 id="GO的内存管理"><a href="#GO的内存管理" class="headerlink" title="GO的内存管理"></a>GO的内存管理</h4><p><img src="/./go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/38720_10.png"></p>
+<h4 id="GO的内存管理"><a href="#GO的内存管理" class="headerlink" title="GO的内存管理"></a>GO的内存管理</h4><p><img src="/2020/08/16/go%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/38720_10.png"></p>
 <p>GO内存管理原理是基于TCMalloc基础，GO内存管理中与之对应的三个重要组成部分包括：</p>
 <h5 id="MHeap"><a href="#MHeap" class="headerlink" title="MHeap"></a>MHeap</h5><p>对内存的抽象依照Span Class对Span进行归类，形成树形结构。当需要分配的内存大于32K就在Mheap上面分配，首先根据申请内存的大小size得到Class szie, 进而根据Class size得到Span class, 最后根据Span class得到内存快Span。</p>
 <h4 id="MCache"><a href="#MCache" class="headerlink" title="MCache"></a>MCache</h4><p>与TCMalloc对应的ThreadCache, 但是与ThredCache与线程绑定不同，Mcache是与逻辑处理器P绑定，因为每一个Goroutine是运行在Processor，当需要申请的内存小于32K的时候，直接从MCache中得到，而不用进过系统调用，也不与其他Goroutine产生竞争。</p>

@@ -13,22 +13,22 @@
 <meta property="og:site_name" content="张副官">
 <meta property="og:description" content="题目描述 输入一个链表，反转链表后，输出新链表的表头。   示例1  输入 1&amp;#123;1,2,3&amp;#125;  输出 1&amp;#123;3,2,1&amp;#125;  直观来看对于链表：  反转后  常规解法 其实我们本质上是把每个节点的数据之间的指向调整一下    通常我们使用preNode(前一个节点)，currNode(当前节点)，nextNode(当前节点)来实现遍历每个节点修改。最开始preN">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-49-49.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-56-37.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-14-42.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-19-09.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-20-50.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-21-30.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-22-24.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-51-09.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-49-49.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-56-37.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-14-42.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-19-09.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-20-50.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-21-30.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-22-24.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-51-09.png">
 <meta property="article:published_time" content="2021-04-11T14:31:01.000Z">
 <meta property="article:modified_time" content="2021-04-13T15:22:52.397Z">
 <meta property="article:author" content="张副官">
 <meta property="article:tag" content="剑指offer">
 <meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.zhangfuguan.top/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png">
     
     
       
@@ -178,27 +178,27 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;3,2,1&#125;</span><br></pre></td></tr></table></figure>
 
 <p>直观来看对于链表：</p>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png" alt="01"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-46-30.png" alt="01"></p>
 <p>反转后</p>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-49-49.png" alt="1"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-49-49.png" alt="1"></p>
 <h3 id="常规解法"><a href="#常规解法" class="headerlink" title="常规解法"></a>常规解法</h3><ol>
 <li>其实我们本质上是把每个节点的数据之间的指向调整一下</li>
 </ol>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-56-37.png" alt="3"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-11-23-56-37.png" alt="3"></p>
 <ol start="2">
 <li>通常我们使用preNode(前一个节点)，currNode(当前节点)，nextNode(当前节点)来实现遍历每个节点修改。最开始preNode指向null，currNode与nextNode指向第一个节点。</li>
 </ol>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-14-42.png"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-14-42.png"></p>
 <ol start="3">
 <li><p>现在开始第一个反转：</p>
 <p> 将nextNode指针指向下一个节点</p>
-<p> <img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-19-09.png"></p>
+<p> <img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-19-09.png"></p>
 <p> 修改当前指针的方向</p>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-20-50.png"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-20-50.png"></p>
 <p>方向修改完成，将pre指向当前节点</p>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-21-30.png"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-21-30.png"></p>
 <p>将当前节点移动到下一个节点上</p>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-22-24.png"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-22-24.png"></p>
 </li>
 <li><p>直到currNode不为null。总结来说preNode用来维持与已经反转好的那部分的关系，nextNode是为了currNode完成方向逆转之后跳到下一个节点，currNode完成方向逆转，承接preNode。想一想如果没有nextNode行不行？</p>
 </li>
@@ -208,7 +208,7 @@
 <h3 id="递归解法"><a href="#递归解法" class="headerlink" title="递归解法"></a>递归解法</h3><ol>
 <li>以heap为起点进行反转，然后返回新链表的起点元素。</li>
 </ol>
-<p><img src="/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-51-09.png"></p>
+<p><img src="/2021/04/11/%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8/2021-04-12-00-51-09.png"></p>
 <ol start="2">
 <li>注意第一个元素需要做单独处理</li>
 </ol>

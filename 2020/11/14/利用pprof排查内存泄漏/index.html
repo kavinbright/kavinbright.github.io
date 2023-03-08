@@ -13,23 +13,23 @@
 <meta property="og:site_name" content="张副官">
 <meta property="og:description" content="go技能卡：利用pprof排查内存泄漏浅言碎语 前几天在POC环境，我负责的一个项目的调度程序内存出现线性增长，由于我们的常驻内存程序限制最大为256MB，所以增长超过这个限制的时候就会被kill掉。      明明DEV, TEST两个环境都是正确的，为啥POC就出现异常了呢？正当我们焦头烂额的时候，想起来我之前在程序里面已经开启了pprof数据采集服务，最终我们通过pprof找到问题位置，排查">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/99cce23b-a5e1-4716-b702-6718911d1911.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/616230dd-fa1f-4151-824d-a0f714504112.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/a4cb0d17-6078-45d9-b37b-44178c926e08.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/afd61c47-54eb-4dbe-bca9-b33fb479abf9.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/0574d8b6-61c5-4979-a5ab-f343f02efe4c.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b27472ea-1e52-443a-9860-7c7380a7970b.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/2682fb43-3e97-41f9-a1bf-516892043742.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/ec476eaa-1768-4b91-ae70-a5342ff834f4.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/8eb61e24-b372-481d-90cb-d51292ae78a8.png">
-<meta property="og:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/832add00-e1d8-4ea4-b00f-82ca1378047c.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/99cce23b-a5e1-4716-b702-6718911d1911.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/616230dd-fa1f-4151-824d-a0f714504112.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/a4cb0d17-6078-45d9-b37b-44178c926e08.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/afd61c47-54eb-4dbe-bca9-b33fb479abf9.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/0574d8b6-61c5-4979-a5ab-f343f02efe4c.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b27472ea-1e52-443a-9860-7c7380a7970b.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/2682fb43-3e97-41f9-a1bf-516892043742.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/ec476eaa-1768-4b91-ae70-a5342ff834f4.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/8eb61e24-b372-481d-90cb-d51292ae78a8.png">
+<meta property="og:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/832add00-e1d8-4ea4-b00f-82ca1378047c.png">
 <meta property="article:published_time" content="2020-11-14T14:54:21.000Z">
 <meta property="article:modified_time" content="2021-04-04T13:17:14.788Z">
 <meta property="article:author" content="张副官">
 <meta property="article:tag" content="go">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.zhangfuguan.top/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png">
     
     
       
@@ -169,8 +169,8 @@
     <h3 id="go技能卡：利用pprof排查内存泄漏"><a href="#go技能卡：利用pprof排查内存泄漏" class="headerlink" title="go技能卡：利用pprof排查内存泄漏"></a>go技能卡：利用pprof排查内存泄漏</h3><h4 id="浅言碎语"><a href="#浅言碎语" class="headerlink" title="浅言碎语"></a>浅言碎语</h4><blockquote>
 <p>前几天在POC环境，我负责的一个项目的调度程序内存出现线性增长，由于我们的常驻内存程序限制最大为256MB，所以增长超过这个限制的时候就会被kill掉。</p>
 </blockquote>
-<p> <img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png"></p>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/99cce23b-a5e1-4716-b702-6718911d1911.png"></p>
+<p> <img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b81ff3d4-7b11-40c8-b791-fc7654768fd6.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/99cce23b-a5e1-4716-b702-6718911d1911.png"></p>
 <blockquote>
 <p>明明DEV, TEST两个环境都是正确的，为啥POC就出现异常了呢？正当我们焦头烂额的时候，想起来我之前在程序里面已经开启了pprof数据采集服务，最终我们通过pprof找到问题位置，排查发现有一位同学在for循环开启了context之后没有关闭掉，使得内存一直增长，添加闭包之后得以解决。</p>
 </blockquote>
@@ -191,7 +191,7 @@
 <blockquote>
 <p>让后在浏览器中访问链接：<a target="_blank" rel="noopener" href="http://127.0.0.1:8080/debug/pprof/">http://127.0.0.1:8080/debug/pprof/</a>可以看到：</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/616230dd-fa1f-4151-824d-a0f714504112.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/616230dd-fa1f-4151-824d-a0f714504112.png"></p>
 <blockquote>
 <p>下面讲述一下上面几个参数的意义</p>
 </blockquote>
@@ -203,41 +203,41 @@
 <blockquote>
 <p>比如我们在cmd里面打开<code>go tool pprof http://127.0.0.1:8080/debug/pprof/allocs</code>,次数会进入待输入命令状态，如果想知道可以支持什么命令则可以输入<code>help</code>即可查看， 进一步如果想看该命令释放方法可以<code>help 命令</code>得到，比如下面输入<code>help list</code>之后：</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/a4cb0d17-6078-45d9-b37b-44178c926e08.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/a4cb0d17-6078-45d9-b37b-44178c926e08.png"></p>
 <blockquote>
 <p>通常情况下我们会使用<code>top</code>&#x2F;<code>top10</code>&#x2F;<code>top20</code>来查看当前指数程序占用排行。</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/afd61c47-54eb-4dbe-bca9-b33fb479abf9.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/afd61c47-54eb-4dbe-bca9-b33fb479abf9.png"></p>
 <blockquote>
 <p>如果我们需要查看具体占用位置，可以输入<code>list 关键字</code>，比如<code>list StartCPUProfile</code>:</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/0574d8b6-61c5-4979-a5ab-f343f02efe4c.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/0574d8b6-61c5-4979-a5ab-f343f02efe4c.png"></p>
 <blockquote>
 <p>此时我们就可以定位到问题了。</p>
 </blockquote>
 <h4 id="锦上添花"><a href="#锦上添花" class="headerlink" title="锦上添花"></a>锦上添花</h4><blockquote>
 <p>其实使用上面的方式我们已经定位到问题位置，但是命令行终究不够直观，如果提供一个文档或者网页能够把数据统计处理统计给我们，那岂不是妙哉，现饭还是很香的。我们只能想想，而大佬早已实现，其实<code>pprof</code>已经提供了网页方式浏览。我们只需要在上面的命令添加<code>-web</code>即可。但是如果你是第一次使用，则会出现以下问题：</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b27472ea-1e52-443a-9860-7c7380a7970b.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/b27472ea-1e52-443a-9860-7c7380a7970b.png"></p>
 <blockquote>
 <p>其实是提示我们需要安装<code>Graphviz</code>,Graphviz是一个由AT&amp;T实验室启动的开源工具包，用于绘制DOT语言脚本描述的图形。我们需要安装一下，(下载地址)[<a target="_blank" rel="noopener" href="https://graphviz.org/download/">https://graphviz.org/download/</a>]。</p>
 </blockquote>
 <blockquote>
 <p>安装之后重新执行<code>go tool pprof -web http://127.0.0.1:8080/debug/pprof/allocs</code></p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/2682fb43-3e97-41f9-a1bf-516892043742.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/2682fb43-3e97-41f9-a1bf-516892043742.png"></p>
 <blockquote>
 <p>上面其实是在浏览器中打开文件，其实还有更好的一种方式，利用<code>pprof</code>起一个服务，可以实时看到指标信息， 执行<code>go tool pprof -web http://127.0.0.1:8080/debug/pprof/allocs</code>:</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/ec476eaa-1768-4b91-ae70-a5342ff834f4.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/ec476eaa-1768-4b91-ae70-a5342ff834f4.png"></p>
 <blockquote>
 <p>你可以选择上面的<code>TOP</code>查看排行情况：</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/8eb61e24-b372-481d-90cb-d51292ae78a8.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/8eb61e24-b372-481d-90cb-d51292ae78a8.png"></p>
 <blockquote>
 <p>你还可以选择<code>Peek</code>查看调用详情：</p>
 </blockquote>
-<p><img src="/./%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/832add00-e1d8-4ea4-b00f-82ca1378047c.png"></p>
+<p><img src="/2020/11/14/%E5%88%A9%E7%94%A8pprof%E6%8E%92%E6%9F%A5%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/832add00-e1d8-4ea4-b00f-82ca1378047c.png"></p>
 <blockquote>
 <p>其实还有很多功能，比如查看火焰图，查看当前数据和累计数据等。</p>
 </blockquote>
