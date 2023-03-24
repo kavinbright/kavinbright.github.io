@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.zhangfuguan.top/"/>
-  <updated>2023-03-08T15:28:32.184Z</updated>
+  <updated>2023-03-24T16:24:12.184Z</updated>
   <id>http://www.zhangfuguan.top/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>二叉树遍历</title>
+    <link href="http://www.zhangfuguan.top/2023/03/25/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/"/>
+    <id>http://www.zhangfuguan.top/2023/03/25/二叉树遍历/</id>
+    <published>2023-03-24T16:16:01.000Z</published>
+    <updated>2023-03-24T16:24:12.184Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="方式"><a href="#方式" class="headerlink" title="方式"></a>方式</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><ul><li>前序遍历：递归遍历根-&gt;左-&gt;右</li><li>中序遍历：递归遍历左-&gt;根-&gt;右</li><li>后续遍历：递归遍历左-&gt;右-&gt;中</li><li>层序遍历：由根节点开始一层层的遍历</li></ul><p>其实前序遍历、中序遍历、后序遍历里面的前、中、后指的是根结点的位置。以下面这棵树来举例说明。<br><img src="/2023/03/25/%E4%BA%8C%E5%8F%89%E6%A0%91%E9%81%8D%E5%8E%86/yuque_mind.jpeg"></p><h3 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Node <span class="keyword">struct</span> &#123;</span><br><span class="line">    Value <span class="type">string</span></span><br><span class="line">    Left *Node</span><br><span class="line">    Right *Node</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="前序遍历"><a href="#前序遍历" class="headerlink" title="前序遍历"></a>前序遍历</h2><p>前序遍历要求先遍历根节点，然后遍历左子树，左后便利右子树。注意这里指的是【子树】不是孩子。所以遍历顺序为：<br>A,B,D,H,I,E,J,C,F,K,G</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">PreRange</span><span class="params">(node *Node)</span></span> []<span class="type">string</span>  &#123;</span><br><span class="line"><span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line">list := <span class="built_in">make</span>([]<span class="type">string</span>, <span class="number">0</span>)</span><br><span class="line">list = <span class="built_in">append</span>(list, node.Value)</span><br><span class="line"></span><br><span class="line">leftList := PreRange(node.Left)</span><br><span class="line"><span class="keyword">if</span> leftList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, leftList...)</span><br><span class="line">&#125;</span><br><span class="line">rightList := PreRange(node.Right)</span><br><span class="line"><span class="keyword">if</span> rightList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, rightList...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="中序遍历"><a href="#中序遍历" class="headerlink" title="中序遍历"></a>中序遍历</h2><p>中序遍历要求先遍历左子树，然后遍历根节点，最后遍历右子树。所以顺序为：<br>H,D,I,B,E,J,A,F,K,C,G</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MidRange</span><span class="params">(node *Node)</span></span> []<span class="type">string</span> &#123;</span><br><span class="line"><span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line">list := <span class="built_in">make</span>([]<span class="type">string</span>,<span class="number">0</span>)</span><br><span class="line">leftList := MidRange(node.Left)</span><br><span class="line"><span class="keyword">if</span> leftList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, leftList...)</span><br><span class="line">&#125;</span><br><span class="line">list = <span class="built_in">append</span>(list, node.Value)</span><br><span class="line">rightList := MidRange(node.Right)</span><br><span class="line"><span class="keyword">if</span> rightList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, rightList...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="后续遍历"><a href="#后续遍历" class="headerlink" title="后续遍历"></a>后续遍历</h2><p>后序遍历要求先遍历左子树，然后遍历右子树，最后遍历根节点。所以顺序为：<br>H,I,D,J,E,B,K,F,G,C,A</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SufRange</span><span class="params">(node *Node)</span></span> []<span class="type">string</span> &#123;</span><br><span class="line"><span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line">list := <span class="built_in">make</span>([]<span class="type">string</span>,<span class="number">0</span>)</span><br><span class="line">leftList := SufRange(node.Left)</span><br><span class="line"><span class="keyword">if</span> leftList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, leftList...)</span><br><span class="line">&#125;</span><br><span class="line">rightList := SufRange(node.Right)</span><br><span class="line"><span class="keyword">if</span> rightList != <span class="literal">nil</span> &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, rightList...)</span><br><span class="line">&#125;</span><br><span class="line">list = <span class="built_in">append</span>(list, node.Value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="层序遍历"><a href="#层序遍历" class="headerlink" title="层序遍历"></a>层序遍历</h2><p>层序遍历其实就是从根节点开始从左到右一层层开始遍历所有节点， 所以顺序为：<br>A,B,C,D,E,F,G,H,I,J,K</p><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">LevelTraversal</span><span class="params">(node *Node)</span></span> []<span class="type">string</span> &#123;</span><br><span class="line"><span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">nodeList := <span class="built_in">make</span>([]*Node, <span class="number">0</span>)</span><br><span class="line">nodeList = <span class="built_in">append</span>(nodeList, node)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> RecursionTraversal(nodeList)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RecursionTraversal</span><span class="params">(nodeList []*Node)</span></span> []<span class="type">string</span> &#123;</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(nodeList) == <span class="number">0</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">list := <span class="built_in">make</span>([]<span class="type">string</span>,<span class="number">0</span>)</span><br><span class="line">nextNodeList := <span class="built_in">make</span>([]*Node, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">for</span> _, node := <span class="keyword">range</span> nodeList &#123;</span><br><span class="line">list = <span class="built_in">append</span>(list, node.Value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> node.Left != <span class="literal">nil</span> &#123;</span><br><span class="line">nextNodeList = <span class="built_in">append</span>(nextNodeList, node.Left)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> node.Right != <span class="literal">nil</span> &#123;</span><br><span class="line">nextNodeList =<span class="built_in">append</span>(nextNodeList, node.Right)</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">len</span>(nextNodeList) &gt; <span class="number">0</span> &#123;</span><br><span class="line">s := RecursionTraversal(nextNodeList)</span><br><span class="line"> <span class="keyword">if</span> <span class="built_in">len</span>(s) &gt; <span class="number">0</span> &#123;</span><br><span class="line"> list = <span class="built_in">append</span>(list, s...)</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;方式&quot;&gt;&lt;a href=&quot;#方式&quot; class=&quot;headerlink&quot; title=&quot;方式&quot;&gt;&lt;/a&gt;方式&lt;/h2&gt;&lt;h3 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot; class=&quot;headerlink&quot; title=&quot;概念&quot;&gt;&lt;/a&gt;概念&lt;/h3&gt;&lt;ul&gt;
+&lt;
+      
+    
+    </summary>
+    
+    
+      <category term="二叉树" scheme="http://www.zhangfuguan.top/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/"/>
+    
+      <category term="算法" scheme="http://www.zhangfuguan.top/tags/%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
   
   <entry>
     <title>分布式锁方案对比</title>
@@ -163,9 +189,9 @@
     </summary>
     
     
-      <category term="剑指offer" scheme="http://www.zhangfuguan.top/tags/%E5%89%91%E6%8C%87offer/"/>
-    
       <category term="算法" scheme="http://www.zhangfuguan.top/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="剑指offer" scheme="http://www.zhangfuguan.top/tags/%E5%89%91%E6%8C%87offer/"/>
     
   </entry>
   
@@ -192,9 +218,9 @@
     </summary>
     
     
-      <category term="剑指offer" scheme="http://www.zhangfuguan.top/tags/%E5%89%91%E6%8C%87offer/"/>
-    
       <category term="算法" scheme="http://www.zhangfuguan.top/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="剑指offer" scheme="http://www.zhangfuguan.top/tags/%E5%89%91%E6%8C%87offer/"/>
     
   </entry>
   
@@ -494,31 +520,6 @@
     
     
       <category term="网络" scheme="http://www.zhangfuguan.top/tags/%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Docker环境实现基于keepalived双主高可用MySQL</title>
-    <link href="http://www.zhangfuguan.top/2019/05/12/Docker%E7%8E%AF%E5%A2%83%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8Ekeepalived%E5%8F%8C%E4%B8%BB%E9%AB%98%E5%8F%AF%E7%94%A8MySQL/"/>
-    <id>http://www.zhangfuguan.top/2019/05/12/Docker环境实现基于keepalived双主高可用MySQL/</id>
-    <published>2019-05-12T14:49:59.000Z</published>
-    <updated>2021-04-04T13:17:14.783Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>最近在公司(博主在一家云计算公司工作)主要做MySQL数据库产品，说白了就是给用户提供一个高可用的MySQL数据库， 我们为用户提供了一个具备服务高可用，数据一致性的运维平台。 在方案的选择中我们最开始想到的是[利用Keepalived构建高可用MySQL双主自动切换，但是数据同步只能选择双主半同步，无法保证数据的强一致性，参考率市场上常见的方案之后，任务pxc是目前最符合我们要求的选项。<br><img src="/2019/05/12/Docker%E7%8E%AF%E5%A2%83%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8Ekeepalived%E5%8F%8C%E4%B8%BB%E9%AB%98%E5%8F%AF%E7%94%A8MySQL/2020-06-14-00-57-19.png" alt="Docker环境实现基于keepalived双主高可用MySQL"></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;最近在公司(博主在一家云计算公司工作)主要做MySQL数据库产品，说白了就是给用户提供一个高可用的MySQL数据库， 我们为用户提供了一个具
-      
-    
-    </summary>
-    
-    
-      <category term="MySQL" scheme="http://www.zhangfuguan.top/tags/MySQL/"/>
-    
-      <category term="数据库， 高可用" scheme="http://www.zhangfuguan.top/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C-%E9%AB%98%E5%8F%AF%E7%94%A8/"/>
     
   </entry>
   
