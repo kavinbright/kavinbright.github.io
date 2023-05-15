@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="先看下面代码，是否有问题。  1234567func main()&amp;#123;   const sh &#x3D; &quot;zhang&quot;   fmt.Println(&amp;sh, sh)   var nl string &#x3D; &quot;san&quot;   fmt.Println(&amp;nl, nl)&amp;#125; 运行结果： 123☁  test_all  go run main.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go容易忽视的黑坑系列1">
+<meta property="og:url" content="http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="先看下面代码，是否有问题。  1234567func main()&amp;#123;   const sh &#x3D; &quot;zhang&quot;   fmt.Println(&amp;sh, sh)   var nl string &#x3D; &quot;san&quot;   fmt.Println(&amp;nl, nl)&amp;#125; 运行结果： 123☁  test_all  go run main.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/bO7tSIlTMeu38TUh6Qrl6S2zdLf6kxlupmIpsGnlnys.png">
+<meta property="article:published_time" content="2023-05-15T15:58:02.000Z">
+<meta property="article:modified_time" content="2023-05-15T16:02:42.339Z">
+<meta property="article:author" content="张副官">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/bO7tSIlTMeu38TUh6Qrl6S2zdLf6kxlupmIpsGnlnys.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>go容易忽视的黑坑系列1</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/03/26/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E6%8F%92%E5%85%A5%E4%BA%8E%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&text=go容易忽视的黑坑系列1"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&is_video=false&description=go容易忽视的黑坑系列1"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go容易忽视的黑坑系列1&body=Check out this article: http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&name=go容易忽视的黑坑系列1&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&t=go容易忽视的黑坑系列1"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        go容易忽视的黑坑系列1
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">张副官</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-05-15T15:58:02.000Z" itemprop="datePublished">2023-05-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <ol>
+<li>先看下面代码，是否有问题。</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">   <span class="keyword">const</span> sh = <span class="string">&quot;zhang&quot;</span></span><br><span class="line">   fmt.Println(&amp;sh, sh)</span><br><span class="line"></span><br><span class="line">   <span class="keyword">var</span> nl <span class="type">string</span> = <span class="string">&quot;san&quot;</span></span><br><span class="line">   fmt.Println(&amp;nl, nl)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">☁  test_all  go run main.go</span><br><span class="line"><span class="comment"># command-line-arguments</span></span><br><span class="line">./main.go:7:14: cannot take the address of sh</span><br></pre></td></tr></table></figure>
+<p>在go中，不同于变量是在运行时分配内存空间，常量通常会被编译器在预处理阶段直接展开，作为指令数据使用，所以常量无法寻址。</p>
+<ol start="2">
+<li>单向channel关闭</li>
+</ol>
+<ul>
+<li>只读channel不允许关闭</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">string</span>, <span class="number">1000</span>)</span><br><span class="line">	ch &lt;- <span class="string">&quot;name&quot;</span></span><br><span class="line">	RecvSim(ch)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">RecvSim</span><span class="params">(ch &lt;- <span class="keyword">chan</span> <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	fmt.Println(&lt;-ch)</span><br><span class="line">	<span class="built_in">close</span>(ch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">☁  test_all  go run main.go</span><br><span class="line"><span class="comment"># command-line-arguments</span></span><br><span class="line">./main.go:35:7: invalid operation: close(ch) (cannot close receive-only channel)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>只写channel可以关闭</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">string</span>, <span class="number">1000</span>)</span><br><span class="line">	SendSim(ch)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SendSim</span><span class="params">(ch <span class="keyword">chan</span> &lt;- <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	ch &lt;- <span class="string">&quot;zzz...&quot;</span></span><br><span class="line">	<span class="built_in">close</span>(ch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>判断下面代码输出的结果：<br>情况A:</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">	ls []<span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(t T)</span></span> &#123;</span><br><span class="line">	t.ls[<span class="number">0</span>] = <span class="number">100</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	t := T&#123;</span><br><span class="line">		ls: []<span class="type">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	foo(t)</span><br><span class="line"></span><br><span class="line">	fmt.Println(t.ls)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正确答案是：[100,2,3]</p>
+<p>情况B:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">	ls []<span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(t T)</span></span> &#123;</span><br><span class="line">	t.ls = <span class="built_in">append</span>(t.ls, <span class="number">100</span>)</span><br><span class="line">	t.ls[<span class="number">0</span>] = <span class="number">1000</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	t := T&#123;</span><br><span class="line">		ls: []<span class="type">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	foo(t)</span><br><span class="line"></span><br><span class="line">	fmt.Println(t.ls)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正确答案：[1,2,3]</p>
+<p>函数foo参数t虽然是传传递，但是复制后的参数t的ls字段最开始指向底层的数组是公用的，所以情况A修改了第一个元素的值也会影响到原来的变量；而情况B犹豫追加了一个元素，导致函数foo的参数t底层数据进行了重新内存分配，指向了新的底层数组，所以不会影响原来的值。</p>
+<ol start="4">
+<li>context.WithValue容易忽视的陷阱。</li>
+</ol>
+<p>查看下面的代码，说出下面代码输出的结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">   ctx0 := context.Background()</span><br><span class="line">   ctx := context.WithValue(ctx0, <span class="string">&quot;name&quot;</span>, <span class="string">&quot;zhangliang&quot;</span>)</span><br><span class="line">   ctx = context.WithValue(ctx0, <span class="string">&quot;age&quot;</span>, <span class="number">12</span>)</span><br><span class="line">   fmt.Println(ctx.Value(<span class="string">&quot;name&quot;</span>))</span><br><span class="line">   fmt.Println(ctx.Value(<span class="string">&quot;age&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正确结果是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">☁  test_all  <span class="keyword">go</span> run main.<span class="keyword">go</span></span><br><span class="line">&lt;<span class="literal">nil</span>&gt;</span><br><span class="line"><span class="number">12</span></span><br></pre></td></tr></table></figure>
+<p>这是因为每组context只允许存储一对key-value，后面的age把前面的name覆盖了。正确写法是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	ctx0 := context.Background()</span><br><span class="line">	ctx1 := context.WithValue(ctx0, <span class="string">&quot;name&quot;</span>, <span class="string">&quot;zhangliang&quot;</span>)</span><br><span class="line">	ctx2 := context.WithValue(ctx1, <span class="string">&quot;age&quot;</span>, <span class="number">12</span>)</span><br><span class="line">	fmt.Println(ctx2.Value(<span class="string">&quot;name&quot;</span>))</span><br><span class="line">	fmt.Println(ctx2.Value(<span class="string">&quot;age&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">☁  test_all  go run main.go</span><br><span class="line">zhangliang</span><br><span class="line">12</span><br></pre></td></tr></table></figure>
+<p>此时的ctx2结构如下：<br><img src="/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/bO7tSIlTMeu38TUh6Qrl6S2zdLf6kxlupmIpsGnlnys.png" alt="001"></p>
+
+  </div>
+</article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">rss</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&text=go容易忽视的黑坑系列1"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&is_video=false&description=go容易忽视的黑坑系列1"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go容易忽视的黑坑系列1&body=Check out this article: http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&title=go容易忽视的黑坑系列1"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&name=go容易忽视的黑坑系列1&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/05/15/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%971/&t=go容易忽视的黑坑系列1"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2019-2023
+    张副官
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'cactus-1';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
