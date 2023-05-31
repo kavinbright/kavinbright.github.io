@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="原理：定义lru结构的时候主要包含一个哈希表和双向链表，哈希表便于获取指定key的数据（复杂度O(1)），把每次热点数据都更新到表头，则从表头到表尾访问热度依次递减，溢出的时候直接删除表尾数据即可。  go代码实现： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go实现lru">
+<meta property="og:url" content="http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="原理：定义lru结构的时候主要包含一个哈希表和双向链表，哈希表便于获取指定key的数据（复杂度O(1)），把每次热点数据都更新到表头，则从表头到表尾访问热度依次递减，溢出的时候直接删除表尾数据即可。  go代码实现： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/6081685543618_.pic.jpg">
+<meta property="article:published_time" content="2023-05-31T14:25:23.000Z">
+<meta property="article:modified_time" content="2023-05-31T14:37:00.166Z">
+<meta property="article:author" content="张副官">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/6081685543618_.pic.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>go实现lru</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/05/28/go%E5%AE%B9%E6%98%93%E5%BF%BD%E8%A7%86%E7%9A%84%E9%BB%91%E5%9D%91%E7%B3%BB%E5%88%972/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&text=go实现lru"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&is_video=false&description=go实现lru"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go实现lru&body=Check out this article: http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&name=go实现lru&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&t=go实现lru"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        go实现lru
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">张副官</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-05-31T14:25:23.000Z" itemprop="datePublished">2023-05-31</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>原理：定义lru结构的时候主要包含一个哈希表和双向链表，哈希表便于获取指定key的数据（复杂度O(1)），把每次热点数据都更新到表头，则从表头到表尾访问热度依次递减，溢出的时候直接删除表尾数据即可。</p>
+<p><img src="/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/6081685543618_.pic.jpg" alt="lru"></p>
+<p>go代码实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;log&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	log.Print(<span class="string">&quot;zlru...&quot;</span>)</span><br><span class="line"></span><br><span class="line">	l := NewLruCache(<span class="number">5</span>)</span><br><span class="line">	l.Put(<span class="number">1</span>, <span class="number">11</span>)</span><br><span class="line">	l.Put(<span class="number">2</span>, <span class="number">22</span>)</span><br><span class="line">	l.Put(<span class="number">3</span>, <span class="number">33</span>)</span><br><span class="line">	l.Put(<span class="number">4</span>, <span class="number">44</span>)</span><br><span class="line">	l.Put(<span class="number">5</span>, <span class="number">55</span>)</span><br><span class="line"></span><br><span class="line">	log.Println(<span class="string">&quot;case1-------------------------------&gt;&quot;</span>)</span><br><span class="line">	log.Printf(<span class="string">&quot;head: %+v&quot;</span>, l.list.head)</span><br><span class="line">	log.Printf(<span class="string">&quot;tail: %+v&quot;</span>, l.list.tail)</span><br><span class="line">	log.Printf(<span class="string">&quot;len: %d&quot;</span>, l.size)</span><br><span class="line">	l.list.Range()</span><br><span class="line"></span><br><span class="line">	log.Println(<span class="string">&quot;case2-------------------------------&gt;&quot;</span>)</span><br><span class="line">	l.Put(<span class="number">6</span>, <span class="number">66</span>)</span><br><span class="line">	log.Printf(<span class="string">&quot;head: %+v&quot;</span>, l.list.head)</span><br><span class="line">	log.Printf(<span class="string">&quot;tail: %+v&quot;</span>, l.list.tail)</span><br><span class="line">	log.Printf(<span class="string">&quot;len: %d&quot;</span>, l.size)</span><br><span class="line">	l.list.Range()</span><br><span class="line"></span><br><span class="line">	log.Println(<span class="string">&quot;case3-------------------------------&gt;&quot;</span>)</span><br><span class="line">	l.Get(<span class="number">3</span>)</span><br><span class="line">	log.Printf(<span class="string">&quot;head: %+v&quot;</span>, l.list.head)</span><br><span class="line">	log.Printf(<span class="string">&quot;tail: %+v&quot;</span>, l.list.tail)</span><br><span class="line">	log.Printf(<span class="string">&quot;len: %d&quot;</span>, l.size)</span><br><span class="line">	l.list.Range()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *linkList)</span></span> Range() &#123;</span><br><span class="line">	<span class="keyword">for</span> node := l.head; node != <span class="literal">nil</span>; node = node.next &#123;</span><br><span class="line">		fmt.Printf(<span class="string">&quot;key: %d, value: %d \n&quot;</span>, node.key, node.value)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 双向链表节点</span></span><br><span class="line"><span class="keyword">type</span> linkNode <span class="keyword">struct</span> &#123;</span><br><span class="line">	key   <span class="type">int</span></span><br><span class="line">	value <span class="type">int</span></span><br><span class="line">	prev  *linkNode</span><br><span class="line">	next  *linkNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 双向链表</span></span><br><span class="line"><span class="keyword">type</span> linkList <span class="keyword">struct</span> &#123;</span><br><span class="line">	head *linkNode</span><br><span class="line">	tail *linkNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// lru缓存结构</span></span><br><span class="line"><span class="keyword">type</span> lruCache <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="built_in">cap</span>      <span class="type">int</span></span><br><span class="line">	size     <span class="type">int</span></span><br><span class="line">	cacheMap <span class="keyword">map</span>[<span class="type">int</span>]*linkNode</span><br><span class="line">	list     *linkList</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">newNode</span><span class="params">(k, v <span class="type">int</span>)</span></span> *linkNode &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;linkNode&#123;</span><br><span class="line">		key:   k,</span><br><span class="line">		value: k,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewLruCache 初始化一个新的lru</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewLruCache</span><span class="params">(<span class="built_in">cap</span> <span class="type">int</span>)</span></span> *lruCache &#123;</span><br><span class="line">	l := &amp;lruCache&#123;</span><br><span class="line">		<span class="built_in">cap</span>:  <span class="built_in">cap</span>,</span><br><span class="line">		size: <span class="number">0</span>,</span><br><span class="line">	&#125;</span><br><span class="line">	l.cacheMap = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="type">int</span>]*linkNode, <span class="number">0</span>)</span><br><span class="line">	l.list = &amp;linkList&#123;</span><br><span class="line">		head: <span class="literal">nil</span>,</span><br><span class="line">		tail: <span class="literal">nil</span>,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> l</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 主要是需要实现两个操作：Get/Put</span></span><br><span class="line"><span class="comment">// Get 获取指定key的值：</span></span><br><span class="line"><span class="comment">//     1. 如果key存在，则需要将该key所在的节点：（1）从当前位置删除，（2）移动到链表头部</span></span><br><span class="line"><span class="comment">//     2. 如果不存在直接返回-1</span></span><br><span class="line"><span class="comment">// Put 新增元素：</span></span><br><span class="line"><span class="comment">//     1. 如果key存在，则需要将该key所在的节点：（1）更新当前节点的值，（2）从当前位置删除，（2）移动到链表头部</span></span><br><span class="line"><span class="comment">//     2. 如果key不存在，则需要：（1）新生成一个节点NewNode, （2）将NewNode放在链表头部，（3）链表长度加1，如果此时链表长度未超过容量cap则直接返回，（4）如果加1后的链表长度超过容量则删除链表末尾节点，删除map中的元素</span></span><br><span class="line"><span class="comment">// 其实归结下来有以下几个基础操作：</span></span><br><span class="line"><span class="comment">//  （1）删除一个已经存在的元素 （2）删除链表中末尾元素（3）将元素放在链表头部</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *lruCache)</span></span> removeNode(node *linkNode) &#123;</span><br><span class="line">	<span class="comment">// 如果node是最后一个元素, 并且prev元素不为空</span></span><br><span class="line">	<span class="keyword">if</span> node.next == <span class="literal">nil</span> &amp;&amp; node.prev != <span class="literal">nil</span> &#123;</span><br><span class="line">		node.prev.next = <span class="literal">nil</span></span><br><span class="line">		l.list.tail = node.prev</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果node是第一个元素, 并且next元素不为空</span></span><br><span class="line">	<span class="keyword">if</span> node.prev == <span class="literal">nil</span> &amp;&amp; node.next != <span class="literal">nil</span> &#123;</span><br><span class="line">		node.next.prev = <span class="literal">nil</span></span><br><span class="line">		l.list.head = node.next</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果只有一个元素</span></span><br><span class="line">	<span class="keyword">if</span> node.prev == <span class="literal">nil</span> &amp;&amp; node.next == <span class="literal">nil</span> &#123;</span><br><span class="line">		l.list.tail = <span class="literal">nil</span></span><br><span class="line">		l.list.head = <span class="literal">nil</span></span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 删除中间元素</span></span><br><span class="line">	node.prev.next = node.next</span><br><span class="line">	node.next.prev = node.prev</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *lruCache)</span></span> removeTail() &#123;</span><br><span class="line">	<span class="keyword">if</span> l.list.tail == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	l.removeNode(l.list.tail)</span><br><span class="line">	<span class="built_in">delete</span>(l.cacheMap, l.list.tail.key)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *lruCache)</span></span> moveHead(node *linkNode) &#123;</span><br><span class="line">	<span class="comment">// 一个元素都没有</span></span><br><span class="line">	<span class="keyword">if</span> l.list.head == <span class="literal">nil</span> &#123;</span><br><span class="line">		l.list.head = node</span><br><span class="line">		l.list.tail = node</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	headNode := l.list.head</span><br><span class="line">	<span class="comment">// 新节点的next指向头部节点</span></span><br><span class="line">	node.next = headNode</span><br><span class="line">	<span class="comment">// 头部节点的prev指向新节点</span></span><br><span class="line">	headNode.prev = node</span><br><span class="line">	<span class="comment">// 新节点的prev设置为nil</span></span><br><span class="line">	node.prev = <span class="literal">nil</span></span><br><span class="line">	<span class="comment">// 双向链表的头部指向新的节点</span></span><br><span class="line">	l.list.head = node</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *lruCache)</span></span> Get(key <span class="type">int</span>) <span class="type">int</span> &#123;</span><br><span class="line">	<span class="comment">// 判断key是否存在</span></span><br><span class="line">	node, ok := l.cacheMap[key]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 删除节点在之前的位置</span></span><br><span class="line">	l.removeNode(node)</span><br><span class="line">	<span class="comment">// 将节点移动到头部</span></span><br><span class="line">	l.moveHead(node)</span><br><span class="line">	<span class="keyword">return</span> node.value</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(l *lruCache)</span></span> Put(key, value <span class="type">int</span>) &#123;</span><br><span class="line">	<span class="comment">// 判断节点是否存在</span></span><br><span class="line">	node, ok := l.cacheMap[key]</span><br><span class="line">	<span class="keyword">if</span> !ok &#123;</span><br><span class="line">		<span class="comment">// 如果不存在则需要新生产一个node， 并指向链表头部</span></span><br><span class="line">		newNode := newNode(key, value)</span><br><span class="line">		<span class="comment">// 向cap里面新增一对k/v</span></span><br><span class="line">		l.cacheMap[key] = newNode</span><br><span class="line">		<span class="comment">// 将新增的node放在链表头部</span></span><br><span class="line">		l.moveHead(newNode)</span><br><span class="line">		<span class="comment">// 链表长度加1</span></span><br><span class="line">		l.size++</span><br><span class="line">		<span class="comment">// 如果长度超过容量则需要删除链表末尾元素</span></span><br><span class="line">		<span class="keyword">if</span> l.size &gt; l.<span class="built_in">cap</span> &#123;</span><br><span class="line">			l.removeTail()</span><br><span class="line">			l.size--</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果新增元素已经存在</span></span><br><span class="line">	<span class="comment">// 更新元素的值</span></span><br><span class="line">	node.value = value</span><br><span class="line">	<span class="comment">// 将元素从当前位置删除</span></span><br><span class="line">	l.removeNode(node)</span><br><span class="line">	<span class="comment">// 将元素移动到链表头部</span></span><br><span class="line">	l.moveHead(node)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  </div>
+</article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">rss</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&text=go实现lru"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&is_video=false&description=go实现lru"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go实现lru&body=Check out this article: http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&title=go实现lru"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&name=go实现lru&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/05/31/go%E5%AE%9E%E7%8E%B0lru/&t=go实现lru"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2019-2023
+    张副官
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'cactus-1';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
