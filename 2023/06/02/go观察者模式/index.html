@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172package mainimport &quot;fmt&quot;func main() &amp;#123;	sub :&#x3D; NewSu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go观察者模式">
+<meta property="og:url" content="http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172package mainimport &quot;fmt&quot;func main() &amp;#123;	sub :&#x3D; NewSu">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-06-02T15:50:53.000Z">
+<meta property="article:modified_time" content="2023-06-02T15:52:50.349Z">
+<meta property="article:author" content="张副官">
+<meta property="article:tag" content="go">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>go观察者模式</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2023/06/02/go%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/06/01/dfs%E4%B9%8B%E6%9F%A5%E6%89%BE%E4%BA%8C%E5%8F%89%E6%A0%91%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&text=go观察者模式"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&is_video=false&description=go观察者模式"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go观察者模式&body=Check out this article: http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&name=go观察者模式&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&t=go观察者模式"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        go观察者模式
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">张副官</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-02T15:50:53.000Z" itemprop="datePublished">2023-06-02</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/go/" rel="tag">go</a>, <a class="tag-link-link" href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;fmt&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	sub := NewSubject(<span class="string">&quot;东北&quot;</span>)</span><br><span class="line">	sub.Register(Observer&#123;</span><br><span class="line">		Uid:  <span class="number">123</span>,</span><br><span class="line">		Name: <span class="string">&quot;张三&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line">	sub.Register(Observer&#123;</span><br><span class="line">		Uid:  <span class="number">124</span>,</span><br><span class="line">		Name: <span class="string">&quot;李四&quot;</span>,</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	sub.NotifyAll()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ObserverInterface 观察者</span></span><br><span class="line"><span class="keyword">type</span> ObserverInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">	Notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Observer 具体观察者</span></span><br><span class="line"><span class="keyword">type</span> Observer <span class="keyword">struct</span> &#123;</span><br><span class="line">	Uid  <span class="type">int32</span></span><br><span class="line">	Name <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(o Observer)</span></span> Notify() &#123;</span><br><span class="line">	fmt.Printf(<span class="string">&quot;观察者【%d】：%s \n&quot;</span>, o.Uid, o.Name)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SubjectInterface 主体，也就是观察者模式的主体</span></span><br><span class="line"><span class="keyword">type</span> SubjectInterface <span class="keyword">interface</span> &#123;</span><br><span class="line">	Register(o ObserverInterface)</span><br><span class="line">	Deregister(o ObserverInterface)</span><br><span class="line">	NotifyAll()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Subject <span class="keyword">struct</span> &#123;</span><br><span class="line">	observerMap <span class="keyword">map</span>[<span class="type">int32</span>]Observer</span><br><span class="line">	name        <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewSubject</span><span class="params">(name <span class="type">string</span>)</span></span> *Subject &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;Subject&#123;</span><br><span class="line">		name:        name,</span><br><span class="line">		observerMap: <span class="keyword">map</span>[<span class="type">int32</span>]Observer&#123;&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Subject)</span></span> Register(o Observer) &#123;</span><br><span class="line">	<span class="keyword">if</span> _, ok := s.observerMap[o.Uid]; ok &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	s.observerMap[o.Uid] = o</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Subject)</span></span> Deregister(o Observer) &#123;</span><br><span class="line">	<span class="keyword">if</span> _, ok := s.observerMap[o.Uid]; !ok &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">delete</span>(s.observerMap, o.Uid)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Subject)</span></span> NotifyAll() &#123;</span><br><span class="line">	<span class="keyword">for</span> _, o := <span class="keyword">range</span> s.observerMap &#123;</span><br><span class="line">		o.Notify()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+<img width="260px" style="margin: auto;" src="https://i.328888.xyz/2023/03/05/GB9Yd.jpeg" />
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">rss</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&text=go观察者模式"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&is_video=false&description=go观察者模式"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=go观察者模式&body=Check out this article: http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&title=go观察者模式"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&name=go观察者模式&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/06/02/go%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/&t=go观察者模式"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2019-2023
+    张副官
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'cactus-1';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
