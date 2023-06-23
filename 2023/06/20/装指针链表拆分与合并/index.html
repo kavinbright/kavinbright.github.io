@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="教程双指针技巧秒杀七道链表题目 题目合并两个有序链表力扣-21-合并两个有序链表  只用两个指针指向两个链表，每次取值的时候移动，如果俩链表中至少有一个遍历完成则结束，把没遍历完成的链表直接放在新链表的后面1234567891011121314151617181920212223242526272829303132333435363738394041424344&#x2F;** * Definition f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="双指针-链表拆分与合并">
+<meta property="og:url" content="http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/index.html">
+<meta property="og:site_name" content="张副官">
+<meta property="og:description" content="教程双指针技巧秒杀七道链表题目 题目合并两个有序链表力扣-21-合并两个有序链表  只用两个指针指向两个链表，每次取值的时候移动，如果俩链表中至少有一个遍历完成则结束，把没遍历完成的链表直接放在新链表的后面1234567891011121314151617181920212223242526272829303132333435363738394041424344&#x2F;** * Definition f">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-06-20T15:08:30.000Z">
+<meta property="article:modified_time" content="2023-06-23T11:05:01.336Z">
+<meta property="article:author" content="张副官">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="双指针">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>双指针-链表拆分与合并</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/atom.xml" title="张副官" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2023/06/15/n%E6%95%B0%E4%B9%8B%E5%92%8C/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&text=双指针-链表拆分与合并"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&is_video=false&description=双指针-链表拆分与合并"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=双指针-链表拆分与合并&body=Check out this article: http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&name=双指针-链表拆分与合并&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&t=双指针-链表拆分与合并"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%99%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">教程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE"><span class="toc-number">2.</span> <span class="toc-text">题目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E4%B8%A4%E4%B8%AA%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8"><span class="toc-number">2.1.</span> <span class="toc-text">合并两个有序链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%9A%94%E9%93%BE%E8%A1%A8"><span class="toc-number">2.2.</span> <span class="toc-text">分隔链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E9%A6%88%E5%80%92%E6%95%B0%E7%AC%ACK%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="toc-number">2.3.</span> <span class="toc-text">反馈倒数第K个节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E4%B8%AD%E9%97%B4%E6%8E%A5%E7%82%B9"><span class="toc-number">2.4.</span> <span class="toc-text">返回中间接点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8"><span class="toc-number">2.5.</span> <span class="toc-text">环形链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II"><span class="toc-number">2.6.</span> <span class="toc-text">环形链表II</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E4%BA%A4%E9%93%BE%E8%A1%A8"><span class="toc-number">2.7.</span> <span class="toc-text">相交链表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88-%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">2.7.1.</span> <span class="toc-text">双指针-暴力破解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88-%E6%8B%BC%E6%8E%A5"><span class="toc-number">2.7.2.</span> <span class="toc-text">双指针-拼接</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        双指针-链表拆分与合并
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">张副官</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-20T15:08:30.000Z" itemprop="datePublished">2023-06-20</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88/" rel="tag">双指针</a>, <a class="tag-link-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h3><p><a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-8f30d/shuang-zhi-0f7cc/">双指针技巧秒杀七道链表题目</a></p>
+<h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><h4 id="合并两个有序链表"><a href="#合并两个有序链表" class="headerlink" title="合并两个有序链表"></a>合并两个有序链表</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/merge-two-sorted-lists/">力扣-21-合并两个有序链表</a></p>
+<ul>
+<li>只用两个指针指向两个链表，每次取值的时候移动，如果俩链表中至少有一个遍历完成则结束，把没遍历完成的链表直接放在新链表的后面<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">mergeTwoLists</span><span class="params">(list1 *ListNode, list2 *ListNode)</span></span> *ListNode &#123;</span><br><span class="line">    <span class="comment">// 此处纯属优化</span></span><br><span class="line">    <span class="keyword">if</span> list1 == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> list2</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> list2 == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> list1</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    head := &amp;ListNode&#123;&#125;</span><br><span class="line">    <span class="comment">// 这里为啥要重新赋值一下，因为最终结果需要返回第一个节点</span></span><br><span class="line">    node := head</span><br><span class="line">    p1 := list1</span><br><span class="line">    p2 := list2</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> p1 != <span class="literal">nil</span> &amp;&amp; p2 != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> p1.Val &lt; p2.Val &#123;</span><br><span class="line">            node.Next = p1</span><br><span class="line">            p1 = p1.Next</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            node.Next = p2</span><br><span class="line">            p2 = p2.Next</span><br><span class="line">        &#125;</span><br><span class="line">        node = node.Next</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 为啥有下面这两行，是因为可能某一个遍历完成，而另外一个还没有，姐可以直接放在后面了</span></span><br><span class="line">    <span class="keyword">if</span> p1 != <span class="literal">nil</span> &#123;</span><br><span class="line">        node.Next = p1</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> p2 != <span class="literal">nil</span> &#123;</span><br><span class="line">        node.Next = p2</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里为啥是next, 因为我们为了方便head是一个无效的节点</span></span><br><span class="line">    <span class="keyword">return</span> head.Next</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="分隔链表"><a href="#分隔链表" class="headerlink" title="分隔链表"></a>分隔链表</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/partition-list/">力扣-86-分隔链表</a></p>
+<ul>
+<li>使用两个链表分别保存小于和大于或等于的值，最后合并。需要注意俩个点：1. 目标链表每遍历一个节点就把指针往后移动，并断开前面的节点；2. 合并的时候只需要判断保存大值的连边是否为空，如果不为空直接放在小值连边后面，最后返回小值链表的头部（注意：我们为了操作方便，在定义链表的时候第一个节点是无效节点，所以表头节点是第二个节点）。<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">partition</span><span class="params">(head *ListNode, x <span class="type">int</span>)</span></span> *ListNode &#123;</span><br><span class="line">    p1 := &amp;ListNode&#123;&#125;</span><br><span class="line">    p1Head := p1</span><br><span class="line">    p2 := &amp;ListNode&#123;&#125;</span><br><span class="line">    p2Head := p2</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> head != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> head.Val &lt; x &#123;</span><br><span class="line">            p1.Next = head</span><br><span class="line">            p1 = p1.Next</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            p2.Next = head</span><br><span class="line">            p2 = p2.Next</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 断开已经处理完成的节点</span></span><br><span class="line">        temp := head.Next</span><br><span class="line">        head.Next = <span class="literal">nil</span></span><br><span class="line">        head = temp</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 大值链表不为空就直接放在后面</span></span><br><span class="line">    <span class="keyword">if</span> p2Head.Next != <span class="literal">nil</span> &#123;</span><br><span class="line">        p1.Next = p2Head.Next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> p1Head.Next</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="反馈倒数第K个节点"><a href="#反馈倒数第K个节点" class="headerlink" title="反馈倒数第K个节点"></a>反馈倒数第K个节点</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/kth-node-from-end-of-list-lcci/">力扣-2-返回倒数第K个节点</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">kthToLast</span><span class="params">(head *ListNode, k <span class="type">int</span>)</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    p := head</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= k; i++ &#123;</span><br><span class="line">        head = head.Next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> head != <span class="literal">nil</span> &#123;</span><br><span class="line">        head = head.Next</span><br><span class="line">        p = p.Next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> p.Val</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="返回中间接点"><a href="#返回中间接点" class="headerlink" title="返回中间接点"></a>返回中间接点</h4><ul>
+<li>其实就是利用快慢指针</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/middle-of-the-linked-list/submissions/">力扣-876-链表中加结点</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">middleNode</span><span class="params">(head *ListNode)</span></span> *ListNode &#123;</span><br><span class="line">    fast, slow := head, head</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> fast != <span class="literal">nil</span> &amp;&amp; fast.Next != <span class="literal">nil</span> &#123;</span><br><span class="line">        fast = fast.Next.Next</span><br><span class="line">        slow = slow.Next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> slow</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="环形链表"><a href="#环形链表" class="headerlink" title="环形链表"></a>环形链表</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/linked-list-cycle/submissions/">力扣-141-环形链表</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hasCycle</span><span class="params">(head *ListNode)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">    fast, slow := head, head</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> fast != <span class="literal">nil</span> &amp;&amp; fast.Next != <span class="literal">nil</span> &#123;</span><br><span class="line">        slow = slow.Next</span><br><span class="line">        fast = fast.Next.Next</span><br><span class="line">        <span class="keyword">if</span> slow == fast &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="环形链表II"><a href="#环形链表II" class="headerlink" title="环形链表II"></a>环形链表II</h4><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1KG4y1G7cu/?vd_source=2cb3c639254a66c279203f3687b0bee9">环形链表II【基础算法精讲 07】_哔哩哔哩_bilibili</a><br><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/linked-list-cycle-ii/submissions/">力扣-142-环形链表II</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">detectCycle</span><span class="params">(head *ListNode)</span></span> *ListNode &#123;</span><br><span class="line">    slow, fast := head, head</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> fast != <span class="literal">nil</span> &amp;&amp; fast.Next != <span class="literal">nil</span> &#123;</span><br><span class="line">        fast = fast.Next.Next</span><br><span class="line">        slow = slow.Next</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> fast == slow &#123;</span><br><span class="line">            <span class="keyword">for</span> head != slow &#123;</span><br><span class="line">                head = head.Next</span><br><span class="line">                slow = slow.Next</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> slow</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="相交链表"><a href="#相交链表" class="headerlink" title="相交链表"></a>相交链表</h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/intersection-of-two-linked-lists/">力扣-160-相交链表</a></p>
+<h5 id="双指针-暴力破解"><a href="#双指针-暴力破解" class="headerlink" title="双指针-暴力破解"></a>双指针-暴力破解</h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getIntersectionNode</span><span class="params">(headA, headB *ListNode)</span></span> *ListNode &#123;</span><br><span class="line">    <span class="keyword">for</span> headA != <span class="literal">nil</span> &#123;</span><br><span class="line">        tempB := headB</span><br><span class="line">        <span class="keyword">for</span> tempB != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> tempB == headA &#123;</span><br><span class="line">                <span class="keyword">return</span> tempB</span><br><span class="line">            &#125;</span><br><span class="line">            tempB = tempB.Next</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        headA = headA.Next</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="双指针-拼接"><a href="#双指针-拼接" class="headerlink" title="双指针-拼接"></a>双指针-拼接</h5><ul>
+<li>把两个链表拼接到一起<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Definition for singly-linked list.</span></span><br><span class="line"><span class="comment"> * type ListNode struct &#123;</span></span><br><span class="line"><span class="comment"> *     Val int</span></span><br><span class="line"><span class="comment"> *     Next *ListNode</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getIntersectionNode</span><span class="params">(headA, headB *ListNode)</span></span> *ListNode &#123;</span><br><span class="line">    a, b := headA, headB</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> a != b &#123;</span><br><span class="line">        <span class="keyword">if</span> a == <span class="literal">nil</span> &#123;</span><br><span class="line">            a = headB</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            a = a.Next</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> b == <span class="literal">nil</span> &#123;</span><br><span class="line">            b = headA</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            b = b.Next</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> a</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+  </div>
+</article>
+<img width="260px" style="margin: auto;" src="/2022/09/10/%E7%92%83%E6%9C%88/wx_avatar.jpg" />
+
+    <div class="blog-post-comments">
+        <div id="disqus_thread">
+            <noscript>加载评论需要在浏览器启用 JavaScript 脚本支持。</noscript>
+        </div>
+    </div>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li>
+         
+          <li><a href="/atom.xml">rss</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%99%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">教程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE"><span class="toc-number">2.</span> <span class="toc-text">题目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E4%B8%A4%E4%B8%AA%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8"><span class="toc-number">2.1.</span> <span class="toc-text">合并两个有序链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E9%9A%94%E9%93%BE%E8%A1%A8"><span class="toc-number">2.2.</span> <span class="toc-text">分隔链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E9%A6%88%E5%80%92%E6%95%B0%E7%AC%ACK%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="toc-number">2.3.</span> <span class="toc-text">反馈倒数第K个节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E4%B8%AD%E9%97%B4%E6%8E%A5%E7%82%B9"><span class="toc-number">2.4.</span> <span class="toc-text">返回中间接点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8"><span class="toc-number">2.5.</span> <span class="toc-text">环形链表</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%8E%AF%E5%BD%A2%E9%93%BE%E8%A1%A8II"><span class="toc-number">2.6.</span> <span class="toc-text">环形链表II</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E4%BA%A4%E9%93%BE%E8%A1%A8"><span class="toc-number">2.7.</span> <span class="toc-text">相交链表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88-%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">2.7.1.</span> <span class="toc-text">双指针-暴力破解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88-%E6%8B%BC%E6%8E%A5"><span class="toc-number">2.7.2.</span> <span class="toc-text">双指针-拼接</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&text=双指针-链表拆分与合并"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&is_video=false&description=双指针-链表拆分与合并"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=双指针-链表拆分与合并&body=Check out this article: http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&title=双指针-链表拆分与合并"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&name=双指针-链表拆分与合并&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://www.zhangfuguan.top/2023/06/20/%E8%A3%85%E6%8C%87%E9%92%88%E9%93%BE%E8%A1%A8%E6%8B%86%E5%88%86%E4%B8%8E%E5%90%88%E5%B9%B6/&t=双指针-链表拆分与合并"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2019-2023
+    张副官
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/tags/%E6%84%8F%E5%91%B3">意味</a></li><!--
+     --><!--
+       --><li><a href="/atom.xml">rss</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+    <script type="text/javascript">
+        var disqus_shortname = 'cactus-1';
+
+        (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        }());
+    </script>
+
+<!-- utterances Comments -->
+
+</body>
+</html>
