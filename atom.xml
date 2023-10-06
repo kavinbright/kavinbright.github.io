@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.zhangfuguan.top/"/>
-  <updated>2023-06-29T17:05:57.978Z</updated>
+  <updated>2023-09-11T16:05:22.555Z</updated>
   <id>http://www.zhangfuguan.top/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>斋见</title>
+    <link href="http://www.zhangfuguan.top/2023/09/11/zhai-md/"/>
+    <id>http://www.zhangfuguan.top/2023/09/11/zhai-md/</id>
+    <published>2023-09-11T15:51:36.000Z</published>
+    <updated>2023-09-11T16:05:22.555Z</updated>
+    
+    <content type="html"><![CDATA[<p>昔人已乘黄鹤去，此地空余黄鹤楼。<br>黄鹤一去不复返，白云千载空悠悠。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;昔人已乘黄鹤去，此地空余黄鹤楼。&lt;br&gt;黄鹤一去不复返，白云千载空悠悠。&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+      <category term="斋见" scheme="http://www.zhangfuguan.top/categories/%E6%96%8B%E8%A7%81/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>二叉树层次遍历</title>
@@ -476,7 +500,7 @@
     <link href="http://www.zhangfuguan.top/2022/09/10/%E7%92%83%E6%9C%88/"/>
     <id>http://www.zhangfuguan.top/2022/09/10/璃月/</id>
     <published>2022-09-09T16:07:51.000Z</published>
-    <updated>2023-09-11T15:17:50.175Z</updated>
+    <updated>2023-09-11T16:08:00.324Z</updated>
     
     <content type="html"><![CDATA[<p>车遥遥，马憧憧。<br>君游东山东复东，安得奋飞逐西风。<br>愿我如星君如月，夜夜流光相皎洁。<br>月暂晦，星常明。<br>留明待月复，三五共盈盈。</p><hr><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/1.png" alt="1"></p><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/2.png" alt="1"></p><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/3.png" alt="1"></p><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/4.png" alt="1"></p><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/5.png" alt="1"></p><p><img src="/2022/09/10/%E7%92%83%E6%9C%88/6.png" alt="1"></p>]]></content>
     
@@ -491,33 +515,10 @@
     
     </summary>
     
-      <category term="sense" scheme="http://www.zhangfuguan.top/categories/sense/"/>
+      <category term="意味" scheme="http://www.zhangfuguan.top/categories/%E6%84%8F%E5%91%B3/"/>
     
     
       <category term="意味" scheme="http://www.zhangfuguan.top/tags/%E6%84%8F%E5%91%B3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>基于GoogleAuthenticator的MFA多重身份认证</title>
-    <link href="http://www.zhangfuguan.top/2022/09/09/%E5%9F%BA%E4%BA%8EGoogleAuthenticator%E7%9A%84MFA%E5%A4%9A%E9%87%8D%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/"/>
-    <id>http://www.zhangfuguan.top/2022/09/09/基于GoogleAuthenticator的MFA多重身份认证/</id>
-    <published>2022-09-08T16:22:26.000Z</published>
-    <updated>2022-09-09T16:01:27.878Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="关于"><a href="#关于" class="headerlink" title="关于"></a>关于</h3><p>对于一个需要身份认证的系统而言，账号和密码是必备的，而敏感系数比较高的应用，固定的账号和密码不足以保护其安全性。通常会采集多种信息来确认当前访问者的身份，即多因素认证（Multi-factor authentication，MFA）,常见的多因素认证方式：</p><ul><li>短信验证码</li><li>邮件验证码</li></ul><p>上面介绍的几种方式在成本，可用性，便捷性上来说都表现不是很好，比如短信和邮件都需要收费，同时都必须保证网络在线。</p><p>Google现在也推荐用户启用两步验证（2 Factor Authentication）功能，并且除了以短信或者电话的方式发送一次性密码之外，还提供了另一种基于时间的一次性密码（Time-based One-time Password，简称TOTP），只需要在手机上安装密码生成应用程序，就可以生成一个随着时间变化的一次性密码，用于帐户验证，而且这个应用程序不需要连接网络即可工作。Google的TOTP方案其实是基于HOTP(HMAC-based One-Time Password)，所以在介绍TOTP之前先了解一下HOTP的原理。</p><h3 id="HOTP"><a href="#HOTP" class="headerlink" title="HOTP"></a>HOTP</h3><p>HOTP是一种基于散列消息验证码（HMAC）生成一次性密码值的算法，HMAC利用哈希算法，以一个密钥和一个消 息为输入，生成一个消息摘要作为输出。</p><p>进行验证时，客户端对密钥和计数器的组合(K,C)使用HMAC（Hash-based Message Authentication Code）算法计算一次性密码，公式如下：</p><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HOTP(K,C) = Truncate(HMAC-SHA-1(K,C))</span><br></pre></td></tr></table></figure><ul><li>K为双方协定的密钥，需要自行保存，不要泄漏</li></ul><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">otpauth://totp/op_app:AccountName?algorithm=SHA1&amp;digits=6&amp;issuer=op_app&amp;period=30&amp;secret=SecretKey</span><br></pre></td></tr></table></figure><ul><li>C为计数器，每次认证通过都会+1</li><li>上面采用了HMAC-SHA-1，当然也可以使用HMAC-MD5等</li><li>HMAC算法得出的值位数比较多，不方便用户输入，因此需要截断（Truncate）成为一组不太长十进制数（例如6位）。</li></ul><p><img src="/2022/09/09/%E5%9F%BA%E4%BA%8EGoogleAuthenticator%E7%9A%84MFA%E5%A4%9A%E9%87%8D%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/1.png" alt="1"></p><h3 id="TOTP"><a href="#TOTP" class="headerlink" title="TOTP"></a>TOTP</h3><p>表示基于时间戳算法的一次性密码。 即基于客户端的动态口令和动态口令验证服务器的时间进行比对，一般每30秒产生一个新口令，要求客户端和服务器能够十分精确的保持正确的时钟，客户端和服务端基于时间计算的动态口令才能一致。</p><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TOTP = HMAC-SHA-1(K, (T - T0) / X)</span><br></pre></td></tr></table></figure><ul><li>T0是约定的起始时间点的时间戳，默认是0，也就是1970年1月1日 00:00:00。T 是当前时间，X为时间步长，通常为30s。所以(T - T0) &#x2F; X指的是当前到1970年1月1日 00:00:00间隔多少个30s</li><li>K为双方协定的密钥</li><li>HMAC-SHA-1是约定的哈希函数</li></ul><p><img src="/2022/09/09/%E5%9F%BA%E4%BA%8EGoogleAuthenticator%E7%9A%84MFA%E5%A4%9A%E9%87%8D%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81/2.png" alt="2"></p><h4 id="验证码计算"><a href="#验证码计算" class="headerlink" title="验证码计算"></a>验证码计算</h4><blockquote><p>RFC4226标准： <a href="https://datatracker.ietf.org/doc/html/rfc4226#section-5.4">https://datatracker.ietf.org/doc/html/rfc4226#section-5.4</a></p></blockquote><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">func GenerateCode(secret string, counter uint64, opts ValidateOpts) (passcode string, err error) &#123;</span><br><span class="line">    // As noted in issue #10 and #17 this adds support for TOTP secrets that are</span><br><span class="line">    // missing their padding.</span><br><span class="line">    secret = strings.TrimSpace(secret)</span><br><span class="line"></span><br><span class="line">    // but the StdEncoding (and the RFC), expect a dictionary of only upper case letters.</span><br><span class="line">    secret = strings.ToUpper(secret)</span><br><span class="line"></span><br><span class="line">    secretBytes, err := base32.StdEncoding.DecodeString(secret)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        return &quot;&quot;, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    buf := make([]byte, 8)</span><br><span class="line">    mac := hmac.New(opts.Algorithm.Hash, secretBytes)</span><br><span class="line">    binary.BigEndian.PutUint64(buf, counter)</span><br><span class="line"></span><br><span class="line">    mac.Write(buf)</span><br><span class="line">    sum := mac.Sum(nil)</span><br><span class="line"></span><br><span class="line">       // HMAC-SHA-1加密后的长度得到一个20字节的密串；</span><br><span class="line">       // 取这个20字节的密串的最后一个字节，取这字节的低4位，作为截取加密串的下标偏移量；</span><br><span class="line">       // 按照下标偏移量开始，获取4个字节，按照大端方式组成一个整数；</span><br><span class="line">       // 截取这个整数的后6位或者8位转成字符串返回。</span><br><span class="line">    // &quot;Dynamic truncation&quot; in RFC 4226</span><br><span class="line">    // http://tools.ietf.org/html/rfc4226#section-5.4</span><br><span class="line">    offset := sum[len(sum)-1] &amp; 0xf</span><br><span class="line">    value := int64(((int(sum[offset]) &amp; 0x7f) &lt;&lt; 24) |</span><br><span class="line">        ((int(sum[offset+1] &amp; 0xff)) &lt;&lt; 16) |</span><br><span class="line">        ((int(sum[offset+2] &amp; 0xff)) &lt;&lt; 8) |</span><br><span class="line">        (int(sum[offset+3]) &amp; 0xff))</span><br><span class="line"></span><br><span class="line">    l := opts.Digits.Length()</span><br><span class="line">    mod := int32(value % int64(math.Pow10(l)))</span><br><span class="line"></span><br><span class="line">    return opts.Digits.Format(mod), nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><h4 id="容错机制"><a href="#容错机制" class="headerlink" title="容错机制"></a>容错机制</h4><ul><li>由于网络延时，用户输入延迟等因素，可能当服务器端接收到一次性密码时，T的数值已经改变，这样就会导致服务器计算的一次性密码值与用户输入的不同，验证失败。解决这个问题个一个方法是，服务器计算当前时间片以及前面的n个时间片内的一次性密码值，只要其中有一个与用户输入的密码相同，则验证通过。当然，n不能太大，否则会降低安全性。</li></ul><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">counters := []uint64&#123;&#125;</span><br><span class="line">counter := int64(math.Floor(float64(t.Unix()) / float64(opts.Period)))</span><br><span class="line"></span><br><span class="line">counters = append(counters, uint64(counter))</span><br><span class="line">for i := 1; i &lt;= int(opts.Skew); i++ &#123;</span><br><span class="line">  counters = append(counters, uint64(counter+int64(i)))</span><br><span class="line">  counters = append(counters, uint64(counter-int64(i)))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for _, counter := range counters &#123;</span><br><span class="line">  rv, err := hotp.ValidateCustom(passcode, counter, secret, hotp.ValidateOpts&#123;</span><br><span class="line">    Digits:    opts.Digits,</span><br><span class="line">    Algorithm: opts.Algorithm,</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  if err != nil &#123;</span><br><span class="line">    return false, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if rv == true &#123;</span><br><span class="line">    return true, nil</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;关于&quot;&gt;&lt;a href=&quot;#关于&quot; class=&quot;headerlink&quot; title=&quot;关于&quot;&gt;&lt;/a&gt;关于&lt;/h3&gt;&lt;p&gt;对于一个需要身份认证的系统而言，账号和密码是必备的，而敏感系数比较高的应用，固定的账号和密码不足以保护其安全性。通常会采集多种信息来确认当前
-      
-    
-    </summary>
-    
-    
-      <category term="go" scheme="http://www.zhangfuguan.top/tags/go/"/>
     
   </entry>
   
