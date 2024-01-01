@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.zhangfuguan.top/"/>
-  <updated>2023-12-15T16:49:55.414Z</updated>
+  <updated>2023-12-24T15:27:08.734Z</updated>
   <id>http://www.zhangfuguan.top/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>web网络应用知识入门</title>
+    <link href="http://www.zhangfuguan.top/2023/12/24/web%E7%BD%91%E7%BB%9C%E5%BA%94%E7%94%A8%E7%9F%A5%E8%AF%86%E5%85%A5%E9%97%A8/"/>
+    <id>http://www.zhangfuguan.top/2023/12/24/web网络应用知识入门/</id>
+    <published>2023-12-24T15:04:55.000Z</published>
+    <updated>2023-12-24T15:27:08.734Z</updated>
+    
+    <content type="html"><![CDATA[<p>当我们面对处于不同行业间的朋友询问自己的职业是干什么的时候，通常难以解答让人通俗易懂</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;当我们面对处于不同行业间的朋友询问自己的职业是干什么的时候，通常难以解答让人通俗易懂&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>秋游皖南川藏线</title>
@@ -389,9 +411,9 @@
     </summary>
     
     
-      <category term="go" scheme="http://www.zhangfuguan.top/tags/go/"/>
-    
       <category term="算法" scheme="http://www.zhangfuguan.top/tags/%E7%AE%97%E6%B3%95/"/>
+    
+      <category term="go" scheme="http://www.zhangfuguan.top/tags/go/"/>
     
       <category term="回溯" scheme="http://www.zhangfuguan.top/tags/%E5%9B%9E%E6%BA%AF/"/>
     
@@ -495,33 +517,6 @@
       <category term="算法" scheme="http://www.zhangfuguan.top/tags/%E7%AE%97%E6%B3%95/"/>
     
       <category term="二叉树" scheme="http://www.zhangfuguan.top/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>分布式锁方案对比</title>
-    <link href="http://www.zhangfuguan.top/2023/03/03/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94/"/>
-    <id>http://www.zhangfuguan.top/2023/03/03/分布式锁方案对比/</id>
-    <published>2023-03-02T16:15:58.000Z</published>
-    <updated>2023-03-08T15:28:32.184Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><p>当我们对一份数据进行修改的时候需要先读取，再修改，由于读取和修改不是原子操作，在并发的情况下，无法保证前后数据是一致的，在单点服务中我们可以使用本地锁来实现（比如：sync.Mutex），但是对于分布式系统服务，本地锁却无能为力。这时候就需要使用分布式锁来保证数据的一致性。</p><p><img src="/2023/03/03/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94/iOLsHtH8yF9PIkHbVzQntyxXNNzV7__KSfDDXUZftsk.png" alt="image"></p><p>很多应用场景是需要系统保证幂等性的（如api服务或消息消费者），并发情况下或消息重复很容易造成系统重入，那么分布式锁是保障幂等的一个重要手段。还有一种场景就是商城做抢购活动、司机抢单等场景需要使用分布式锁来防止出现“超卖”现象。</p><h3 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h3><ul><li>基于数据库的唯一索引</li><li>基于redis的setnx</li><li>基于zookeeper</li></ul><h3 id="基于数据库"><a href="#基于数据库" class="headerlink" title="基于数据库"></a>基于数据库</h3><h4 id="基于唯一索引"><a href="#基于唯一索引" class="headerlink" title="基于唯一索引"></a>基于唯一索引</h4><p>基于数据库的实现方式的核心思想是：在数据库中创建一个表，表中包含方法名（或者变量等）等字段，并在方法名字段上创建唯一索引，想要执行某个方法，就使用这个方法名向表中插入数据，成功插入则获取锁，执行完成后删除对应的行数据释放锁。</p><ul><li>新建一张表</li></ul><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `method_lock`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `method_lock` (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT COMMENT <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  `method_name` <span class="type">varchar</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;锁定的方法名&#x27;</span>,</span><br><span class="line">  `<span class="keyword">desc</span>` <span class="type">varchar</span>(<span class="number">255</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;备注信息&#x27;</span>,</span><br><span class="line">  `update_time` <span class="type">timestamp</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  <span class="keyword">UNIQUE</span> KEY `uidx_method_name` (`method_name`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">3</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8 COMMENT<span class="operator">=</span><span class="string">&#x27;锁定中的方法&#x27;</span>;</span><br></pre></td></tr></table></figure><p>核心就是利用唯一索引的不可重复插入的特性，来控制锁的获取是释放。</p><ul><li>想要执行某个方法，就使用这个方法名向表中插入数据：</li></ul><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> method_lock (method_name, <span class="keyword">desc</span>) <span class="keyword">VALUES</span> (<span class="string">&#x27;methodName&#x27;</span>, <span class="string">&#x27;测试的methodName&#x27;</span>);</span><br></pre></td></tr></table></figure><p>因为我们对<code>method_name</code>做了唯一性约束，这里如果有多个请求同时提交到数据库的话，数据库会保证只有一个操作可以成功，那么我们就可以认为操作成功的那个线程获得了该方法的锁，可以执行方法体内容。</p><ul><li>成功插入则获取锁，执行完成后删除对应的行数据释放锁：</li></ul><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> method_lock <span class="keyword">where</span> method_name <span class="operator">=</span><span class="string">&#x27;methodName&#x27;</span>;</span><br></pre></td></tr></table></figure><h4 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h4><p>乐观锁在操作数据时非常乐观，认为别人不会同时修改数据。因此乐观锁不会上锁，只是在执行更新的时候判断一下在此期间别人是否修改了数据：如果别人修改了数据则放弃操作，否则执行操作。</p><p>乐观锁大多数是基于数据版本(version)的记录机制实现的。何谓数据版本号？即为数据增加一个版本标识，在基于数据库表的版本解决方案中，一般是通过为数据库表添加一个 “version”字段来实现读取出数据时，将此版本号一同读出，之后更新时，对此版本号加1。在更新过程中，会对版本号进行比较，如果是一致的，没有发生改变，则会成功执行本次操作；如果版本号不一致，则会更新失败。其实也可以为使用表的updated_at字段记录每次更新的时间戳，使用时间戳作为version字段。</p><p>乐观锁的优点比较明显，由于在检测数据冲突时并不依赖数据库本身的锁机制，不会影响请求的性能，当产生并发且并发量较小的时候只有少部分请求会失败。缺点是需要对表的设计增加额外的字段，增加了数据库的冗余，另外，当应用并发量高的时候，version值在频繁变化，则会导致大量请求失败，影响系统的可用性。数据库锁都是作用于同一行数据记录上，这就导致一个明显的缺点，在一些特殊场景，如大促、秒杀等活动开展的时候，大量的请求同时请求同一条记录的行锁（update），会对数据库产生很大的写压力。所以综合数据库乐观锁的优缺点，乐观锁比较适合并发量不高，并且写操作不频繁的场景。</p><h4 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h4><p>悲观锁在操作数据时比较悲观，认为别人会同时修改数据。因此操作数据时直接把数据锁住，直到操作完成后才会释放锁；上锁期间其他人不能修改数据。</p><p>要使用悲观锁，我们必须关闭mysql数据库的自动提交属性，因为MySQL默认使用autocommit模式，也就是说，当你执行一个更新操作后，MySQL会立刻将结果进行提交。set autocommit&#x3D;0;</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="number">0.</span>开始事务</span><br><span class="line"><span class="keyword">begin</span>;<span class="operator">/</span><span class="keyword">begin</span> work;<span class="operator">/</span><span class="keyword">start</span> transaction; (三者选一就可以)</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="number">1.</span>查询出商品信息</span><br><span class="line"><span class="keyword">select</span> status <span class="keyword">from</span> t_goods <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="number">2.</span>根据商品信息生成订单</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_orders (id,goods_id) <span class="keyword">values</span> (<span class="keyword">null</span>,<span class="number">1</span>);</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="number">3.</span>修改商品status为<span class="number">2</span></span><br><span class="line"><span class="keyword">update</span> t_goods <span class="keyword">set</span> status<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span><span class="number">4.</span>提交事务</span><br><span class="line"><span class="keyword">commit</span>;<span class="operator">/</span><span class="keyword">commit</span> work;</span><br></pre></td></tr></table></figure><p>在悲观锁中，每一次行数据的访问都是独占的，只有当正在访问该行数据的请求事务提交以后，其他请求才能依次访问该数据，否则将阻塞等待锁的获取。悲观锁可以严格保证数据访问的安全。但是缺点也明显，即每次请求都会额外产生加锁的开销且未获取到锁的请求将会阻塞等待锁的获取，在高并发环境下，容易造成大量请求阻塞，影响系统可用性。另外，悲观锁使用不当还可能产生死锁的情况。</p><h4 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h4><ol><li>因为是基于数据库实现的，数据库的可用性和性能将直接影响分布式锁的可用性及性能，所以，数据库需要双机部署、数据同步、主备切换；  </li><li>不具备可重入的特性，因为同一个线程在释放锁之前，行数据一直存在，无法再次成功插入数据，所以，需要在表中新增一列，用于记录当前获取到锁的机器和线程信息，在再次获取锁的时候，先查询表中机器和线程信息是否和当前机器和线程相同，若相同则直接获取锁；  </li><li>没有锁失效机制，因为有可能出现成功插入数据后，服务器宕机了，对应的数据没有被删除，当服务恢复后一直获取不到锁，所以，需要在表中新增一列，用于记录失效时间，并且需要有定时任务清除这些失效的数据；  </li><li>不具备阻塞锁特性，获取不到锁直接返回失败，所以需要优化获取逻辑，循环多次去获取。  </li><li>在实施的过程中会遇到各种不同的问题，为了解决这些问题，实现方式将会越来越复杂；依赖数据库需要一定的资源开销，性能问题需要考虑。</li></ol><h3 id="基于redis的setnx"><a href="#基于redis的setnx" class="headerlink" title="基于redis的setnx"></a>基于redis的setnx</h3><ol><li>获取锁的时候，使用setnx加锁，并使用expire命令为锁添加一个超时时间，超过该时间则自动释放锁，锁的value值为一个随机生成的UUID，通过此在释放锁的时候进行判断。</li></ol><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SETNX &#123;ResourceURI&#125; &#123;UUID&#125;</span><br><span class="line">EXPIRE &#123;ResourceURI&#125; &#123;timeout&#125; </span><br></pre></td></tr></table></figure><ol start="2"><li>释放锁的时候，通过UUID判断是不是该锁，若是该锁，则执行delete进行锁释放。</li></ol><figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 比对 value 与 标识</span><br><span class="line">if (redis.get(&quot;lock:168&quot;).equals(random_value))&#123;</span><br><span class="line">   redis.del(&quot;lock:168&quot;); //比对成功则删除</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure><h4 id="缺陷-1"><a href="#缺陷-1" class="headerlink" title="缺陷"></a>缺陷</h4><ol><li>setnx和expire操作的非原子特性会导致死锁问题。协程A执行setnx命令成功，结果运行协程A的服务发生异常重启，导致expire命令没有执行，那么就会由于锁没有设置超时时间形成死锁。</li><li>A线程拿到锁超时释放，但是A依旧在执行自己的业务逻辑，此时B线程立刻获得锁，B也开始执行。这显然是不被允许的，一般会采取加大过期时间或者添加守护线程，go中也可以使用context设置过期时间。</li><li>上述方案无法达到不可重入，即在同一个协程中多次加锁。可以在本地维护一个map，map的key为锁标识，value为加锁次数。 每次加锁的时候加1， 重新设置过期时间，每次释放锁的时候减1，当计数小于或等于1的时候执行删除操作删除</li></ol><h3 id="基于zookeeper"><a href="#基于zookeeper" class="headerlink" title="基于zookeeper"></a>基于zookeeper</h3><p>利用zookeeper的临时有序节点和wathcer机制来实现分布式锁的功能。具体实现步骤如下：</p><ol><li>创建一个目录lock</li><li>每个节点尝试获取锁时，首先在zookeeper的lock目录下创建一个znode节点，zookeeper的有序临时节点会自动根据创建先后顺序给节点编号。</li></ol><p><img src="/2023/03/03/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94/Q8r39VsHbcEV13aoTmoBzcwJrtSP7XxGDm2s44df94Y.png" alt="image"></p><ol start="3"><li>判断当前服务节点创建的znode节点是最小节点。</li></ol><ul><li>如果序列号是最小的，则成功获取到锁。执行完操作后，把创建的节点给删掉。</li><li>如果不是，则监听比自己要小 1 的节点变化。直到拿到自己是最小的节点时获得锁。</li></ul><h4 id="缺陷-2"><a href="#缺陷-2" class="headerlink" title="缺陷"></a>缺陷</h4><p>虽然zookeeper具备高可用、可重入、阻塞锁特性，可解决失效死锁问题，但是因为需要频繁的创建和删除节点，性能上不如Redis方式。</p><h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p><a href="https://xiaomi-info.github.io/2019/12/17/redis-distributed-lock/">小米技术团队-分布式锁的实现之 redis 篇</a></p><p><a href="https://www.cnblogs.com/liuqingzheng/p/11080501.html">刘清政的博客-分布式锁</a></p><p><a href="https://chai2010.cn/advanced-go-programming-book/ch6-cloud/ch6-02-lock.html#623-%E5%9F%BA%E4%BA%8E-redis-%E7%9A%84-setnx">go高级编程-分布式锁</a></p><p><a href="https://tech.meituan.com/2017/03/17/cache-about.html">美团技术团队-缓存那些事</a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;分布式锁&quot;&gt;&lt;a href=&quot;#分布式锁&quot; class=&quot;headerlink&quot; title=&quot;分布式锁&quot;&gt;&lt;/a&gt;分布式锁&lt;/h1&gt;&lt;p&gt;当我们对一份数据进行修改的时候需要先读取，再修改，由于读取和修改不是原子操作，在并发的情况下，无法保证前后数据是一致的，在单
-      
-    
-    </summary>
-    
-    
-      <category term="go" scheme="http://www.zhangfuguan.top/tags/go/"/>
-    
-      <category term="微服务" scheme="http://www.zhangfuguan.top/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"/>
-    
-      <category term="高并发" scheme="http://www.zhangfuguan.top/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
     
   </entry>
   
